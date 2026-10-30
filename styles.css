@@ -1,0 +1,21 @@
+/* ETV Workshop site tweaks on top of the flatly theme */
+.etv-hero h1 { font-size: 2.6rem; line-height: 1.1; margin-bottom: 0.5rem; }
+.etv-hero .lede { font-size: 1.15rem; max-width: 42rem; }
+.etv-e { color: #1f7a5c; } .etv-t { color: #b8691f; } .etv-v { color: #3b4f8c; }
+.etv-quote { border-left: 4px solid #c7375a; padding-left: 0.9rem; font-weight: 600; font-size: 1.15rem; }
+.etv-card { background: #f2f5f3; border: 1px solid #cfd9d4; border-radius: 8px; padding: 1.1rem 1.25rem; height: 100%; }
+.etv-card h3 { margin-top: 0; }
+.etv-card pre { font-size: 0.8rem; }
+.qr-box { text-align: center; }
+.qr-box img { width: 100%; max-width: 320px; height: auto; image-rendering: pixelated; }
+.qr-box .url { font-family: monospace; font-size: 0.95rem; word-break: break-all; margin-top: 0.4rem; }
+.qr-big img { width: min(80vmin, 640px); height: auto; image-rendering: pixelated; }
+.qr-big { text-align: center; padding-top: 1rem; }
+.qr-big .url { font-family: monospace; font-size: 1.6rem; word-break: break-all; }
+.btn-dl { font-size: 1.05rem; padding: 0.6rem 1.2rem; }
+.step-pill { display: inline-block; font-size: 0.75rem; letter-spacing: 0.06em; text-transform: uppercase; font-weight: 700; padding: 0.15rem 0.5rem; border-radius: 4px; color: #fff; }
+.pill-e { background: #1f7a5c; } .pill-t { background: #b8691f; } .pill-v { background: #3b4f8c; }
+@media print {
+  .navbar, .page-footer, .sidebar, #quarto-margin-sidebar, .toc { display: none !important; }
+  .qr-big img { width: 85vmin; }
+}

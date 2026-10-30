@@ -1,0 +1,197 @@
+---
+title: "ETV Workshop: Positron + R"
+subtitle: "Extract → Transform → Visualize in 60 minutes · Dr. Immanuel Williams"
+toc: false
+---
+
+::: {.etv-hero}
+# [Extract]{.etv-e} → [Transform]{.etv-t} → [Visualize]{.etv-v} {.unnumbered}
+
+::: {.lede}
+A beginner's hour in Positron and R. You'll bring data in, reshape it to answer **one real question**, draw the answer, and then use an AI assistant to run the next cycle faster without giving up the checks. Three files, two datasets, one framework.
+:::
+
+::: {.etv-quote}
+"It's going to be a lot, but we got this."
+[Opening line. Candy is involved.]{.text-muted style="font-weight:400;font-size:0.9rem;display:block"}
+:::
+:::
+
+## Minute zero: two polls, then download
+
+::: {.callout-important}
+## Hands up
+
+1. **Who has R installed?**
+2. **Who has Positron installed?**
+
+If your hand stayed down for either one, tell the instructor now. Everyone else: scan the code or tap the button to get the materials.
+:::
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-5 .qr-box}
+![Scan to open this site on your phone or laptop](images/qr-etv-workshop.png){fig-alt="QR code linking to https://gato365.github.io/etv-workshop/"}
+
+<div class="url">gato365.github.io/etv-workshop</div>
+
+[Open a full-screen version for the projector](qr.qmd)
+:::
+
+::: {.g-col-12 .g-col-md-7}
+::: {.etv-card}
+### Everything in one download
+
+<a class="btn btn-primary btn-dl" href="etv-workshop.zip" download>⬇ Download etv-workshop.zip</a>
+
+Unzip it, keep the folder together, and in Positron use **File → Open Folder…** on the `etv-workshop` folder.
+
+```
+etv-workshop/
+├── README.md
+├── qmd/
+│   ├── 01_start_here_positron_and_r.qmd
+│   ├── 02_csv_extract_transform_visualize.qmd
+│   └── 03_wikipedia_and_ai_etv_flows.qmd
+└── data/
+    ├── cafe_orders.csv
+    └── top_films_backup.csv
+```
+
+Only need one file? [cafe_orders.csv](data/cafe_orders.csv) · [top_films_backup.csv](data/top_films_backup.csv)
+:::
+:::
+
+::::
+
+## The framework
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-4}
+::: {.etv-card}
+[Extract]{.step-pill .pill-e}
+
+### Bring the data in
+From a CSV file or straight out of a Wikipedia table. One package each.
+
+`readr::read_csv()` · `htmltab::htmltab()`
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.etv-card}
+[Transform]{.step-pill .pill-t}
+
+### Reshape it to the question
+Keep what matters, fix what's broken, group and summarise. Always with `|>`.
+
+`select()` · `filter()` · `mutate()` · `group_by()` · `summarise()`
+:::
+:::
+
+::: {.g-col-12 .g-col-md-4}
+::: {.etv-card}
+[Visualize]{.step-pill .pill-v}
+
+### Draw the answer
+One clearly labeled chart whose title states the finding, not the variables.
+
+`ggplot() + geom_col() + labs(title = "the answer")`
+:::
+:::
+
+::::
+
+## Run of show
+
+Three files, in order. Essential parts fit the hour; optional extensions are marked inside each file and can go home with you.
+
+| Time | File | What happens |
+|---|---|---|
+| 0:00–0:10 | [01 · Start here: Positron and R](qmd/01_start_here_positron_and_r.qmd) | Polls (R? Positron?), download the zip, how R, Positron, and packages relate, install vs. load, a five-minute Positron tour, the ETV picture. Pre-workshop checklist and instructor checklist inside. |
+| 0:10–0:35 | [02 · Café orders: a complete ETV cycle](qmd/02_csv_extract_transform_visualize.qmd) | One question: *which drink category makes the most money, and is it volume or price?* Extract with `read_csv()`, fix a price column stored as text, group and summarise, draw two bar charts, interpret in plain language. |
+| 0:35–0:55 | [03 · Wikipedia tables and AI-assisted flows](qmd/03_wikipedia_and_ai_etv_flows.qmd) | Pull the top-50 highest-grossing films table out of Wikipedia with `htmltab()`, clean it, count films per decade. Then the AI loop: question → plan → code → checks → chart → interpretation, with a prompt template and a planted mistake to find. |
+| 0:55–1:00 | 03 | Exit task and wrap-up |
+
+## Data
+
+Both files are inside the zip. Download them separately here if you only need one.
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+::: {.etv-card}
+### [cafe_orders.csv](data/cafe_orders.csv) · used in 02
+**Synthetic.** Four simulated weeks of orders at a fictional campus café (Sept 21 – Oct 18, 2026). No real business. 506 rows, 10 columns. The `price` column is stored as text with a dollar sign on purpose; parsing it is the cleaning task.
+:::
+:::
+
+::: {.g-col-12 .g-col-md-6}
+::: {.etv-card}
+### [top_films_backup.csv](data/top_films_backup.csv) · fallback for 03
+The first table on Wikipedia's *List of highest-grossing films*, saved 2026-10-28 with its column names unchanged so the same cleaning code works on the live extract and on this file. 50 rows, 5 columns. Daggers (†) mark films still in theaters. Source: Wikipedia contributors, CC BY-SA 4.0.
+:::
+:::
+
+::::
+
+## Before you arrive
+
+Installs take 10–15 minutes and eat the hour if done live. Please finish these first. Full details are in [file 01](qmd/01_start_here_positron_and_r.qmd).
+
+:::: {.grid}
+
+::: {.g-col-12 .g-col-md-6}
+### Pre-workshop checklist
+
+1. Install **R 4.2 or newer** from [cloud.r-project.org](https://cloud.r-project.org/) (or with [rig](https://github.com/r-lib/rig)). Positron does not include R.
+2. Install **Positron** from [positron.posit.co](https://positron.posit.co/download.html).
+3. Open Positron once and confirm the interpreter selector (top-right) shows **R 4.x**.
+4. Run the package installs on the right in the Console. Say yes to prompts.
+5. Download the zip above, unzip it, and in Positron use **File → Open Folder…** on the `etv-workshop` folder.
+
+Candy for the first correct prediction, the first fixed error, and the first plot.
+:::
+
+::: {.g-col-12 .g-col-md-6}
+### Package installs (once per computer)
+
+```r
+# From CRAN
+install.packages(c("readr", "dplyr", "ggplot2", "remotes"))
+
+# htmltab was removed from CRAN on 2022-11-11,
+# so it installs from the maintained GitHub fork:
+remotes::install_github("htmltab/htmltab")
+
+# Checkpoint: four TRUEs
+c("readr", "dplyr", "ggplot2", "htmltab") %in%
+  rownames(installed.packages())
+```
+
+Install once; load with `library()` at the top of every script.
+:::
+
+::::
+
+## If something breaks
+
+The four failures that eat workshop time. Each file has a longer troubleshooting list.
+
+**`cannot open file 'data/cafe_orders.csv'`**
+Wrong working directory. Run `getwd()`; it should end in `etv-workshop`. Use File → Open Folder… on that folder, then restart R.
+
+**`package 'htmltab' is not available`**
+Expected: it isn't on CRAN. Use `remotes::install_github("htmltab/htmltab")`. If GitHub rate-limits the room, skip it and use `top_films_backup.csv`.
+
+**`could not find function "read_csv"`**
+The package is installed but not loaded this session. Run `library(readr)`. Same fix for dplyr and ggplot2 functions.
+
+**htmltab: table not found / columns look wrong**
+Wikipedia changed the page. Try `which = 1`, or read the backup CSV; the column names match, so the rest of the code runs unchanged.
+
+::: {.callout-note collapse="true"}
+## About the code in these files
+R code follows current readr, dplyr, and ggplot2 documentation but was not executed when these materials were built; expected outputs were computed from the CSVs separately. Each file lists what was and wasn't tested.
+:::

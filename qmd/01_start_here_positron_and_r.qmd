@@ -1,0 +1,230 @@
+---
+title: "01 · Start Here: Positron and R"
+subtitle: "ETV Workshop · Extract → Transform → Visualize"
+author: "Dr. Immanuel Williams"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-copy: true
+    theme: flatly
+execute:
+  eval: false
+---
+
+> **It's going to be a lot, but we got this.**
+
+::: {.callout-important}
+## Minute zero: two quick polls (before anything else)
+
+Hands up:
+
+1. **Who has R installed?**
+2. **Who has Positron installed?**
+
+If your hand stayed down for either one, tell the instructor now so we can get you set up while everyone else opens the folder. Then scan the QR code on the projector, or go to <https://gato365.github.io/etv-workshop/>, and download **etv-workshop.zip** from the home page.
+:::
+
+This first file takes about **10 minutes** of the live hour. Its only job is to get you oriented in Positron and make sure the packages we need are ready. The real data work starts in `02_csv_extract_transform_visualize.qmd`.
+
+::: {.callout-important}
+## Pre-workshop checklist (do this BEFORE the workshop)
+
+Installing R and Positron takes 10–15 minutes and a good internet connection. Please finish these four steps before you arrive so we can spend the hour on data, not downloads.
+
+1. **Install R (version 4.2 or newer).** Positron does not include R; you install it separately. Two options:
+   - Easiest: the installer for your operating system from <https://cloud.r-project.org/>
+   - Recommended by the Positron team: `rig`, a tool that manages R installations — <https://github.com/r-lib/rig>
+2. **Install Positron** from <https://positron.posit.co/download.html>. It runs on macOS, Windows, and Linux.
+3. **Open Positron once.** It should find your R installation automatically. In the top-right corner you'll see an interpreter selector; if it doesn't say **R 4.x**, click it and choose R.
+4. **Install the packages** by pasting the code in the "Install the packages" section below into the Console and pressing Enter. Say **yes** to any prompts. This is the step most likely to need a troubleshooting minute, so do it early.
+
+Also: download `etv-workshop.zip` from the workshop site (<https://gato365.github.io/etv-workshop/>, or scan the QR code), unzip it, and keep the folder somewhere you can find (Desktop is fine). Inside you'll find `qmd/` (these three files) and `data/` (the CSV files).
+:::
+
+## How R, Positron, and packages fit together
+
+Three things that beginners often blur together:
+
+| Thing | What it is | Analogy |
+|---|---|---|
+| **R** | The programming language and the engine that runs your code | The engine of a car |
+| **Positron** | The app you type in. It shows your files, code, console, data, and plots in one window | The car's dashboard and steering wheel |
+| **Packages** | Add-ons written by the R community that give R new functions | Upgrades you bolt onto the car |
+
+R can run without Positron (it's just less pleasant). Positron cannot run R code without R installed. Packages live inside your R installation, not inside Positron.
+
+We will use four packages today, each introduced only when we need it:
+
+- **readr** — reads CSV files into R (Extract)
+- **dplyr** — transforms data: select, filter, mutate, group, summarise (Transform)
+- **ggplot2** — makes plots (Visualize)
+- **htmltab** — pulls tables out of web pages (Extract, file 03)
+
+These first three are part of the "tidyverse" family. You may see tutorials run `library(tidyverse)` to load all of them at once (plus about five more). We load them one at a time so you know exactly which package each function comes from.
+
+## Installing vs. loading a package
+
+This confuses everyone at first, so here is the rule:
+
+- **Install once per computer.** `install.packages("readr")` downloads the package from CRAN (the official R package repository) onto your hard drive. You do this one time, like installing an app on your phone.
+- **Load once per session.** `library(readr)` opens the package so you can use its functions right now. You do this at the top of every script, every time you start R — like opening the app.
+
+If you see the error `could not find function "read_csv"`, you forgot to load. If you see `there is no package called 'readr'`, you forgot to install.
+
+## Install the packages
+
+Run this **once**, in the Console. It will take a minute or two and print a lot of text. That's normal.
+
+```r
+# Standard CRAN installs — run once per computer
+install.packages(c("readr", "dplyr", "ggplot2", "remotes"))
+```
+
+Now the special case. `htmltab` is **not** currently on CRAN. It was removed from the CRAN repository on 2022-11-11, so `install.packages("htmltab")` will fail with `package 'htmltab' is not available`. A volunteer maintains a fork on GitHub, so we install from there using the **remotes** package, which knows how to download and build a package directly from a GitHub repository:
+
+```r
+# htmltab is not on CRAN; install from the maintained GitHub fork
+remotes::install_github("htmltab/htmltab")
+```
+
+Why the difference? CRAN packages are pre-checked and pre-built, so `install.packages()` just downloads a finished file. A GitHub package is raw source code, so `remotes::install_github()` downloads it, builds it on your computer, and then installs it. The result is the same: a package in your library.
+
+::: {.callout-note}
+## Verified
+The install command above was checked against the `htmltab/htmltab` GitHub README and the CRAN archive page on 2026-10-28. The original repository (`crubba/htmltab`) is unmaintained; the `htmltab/htmltab` fork is the one to use.
+:::
+
+**Checkpoint:** run this and you should see four `TRUE`s:
+
+```r
+c("readr", "dplyr", "ggplot2", "htmltab") %in% rownames(installed.packages())
+```
+
+## Load the packages
+
+This goes at the **top of every script** you write today:
+
+```r
+library(readr)
+library(dplyr)
+library(ggplot2)
+```
+
+(We'll add `library(htmltab)` in file 03.) If dplyr prints a message about objects being masked from `package:stats`, ignore it. That's normal.
+
+## A quick tour of Positron (5 minutes, live)
+
+Positron is built on the same foundation as VS Code, so if you've used that, this will feel familiar. If not, here's everything you need for today.
+
+### Open the workshop folder
+
+**File → Open Folder…** and choose your unzipped `etv-workshop` folder. The left sidebar (Explorer) now shows `qmd/` and `data/`. Opening the *folder* (not just a file) matters: it sets your **working directory**, which is how R finds `data/cafe_orders.csv` later.
+
+**Checkpoint:** in the Console, type `getwd()` and press Enter. The path printed should end in `etv-workshop`. If it doesn't, see Troubleshooting.
+
+### Write and save a script
+
+1. **File → New File…** → choose **R File** (or create a file named `my_script.R`).
+2. Type `library(readr)` on line 1.
+3. Save with **Ctrl+S** (Windows/Linux) or **Cmd+S** (Mac). Name it `my_script.R` inside the `etv-workshop` folder.
+
+A script is just a text file of R code. Saving it is how your work survives closing Positron. The Console, by contrast, forgets everything when you quit.
+
+### Run code
+
+Put your cursor on a line and press **Ctrl+Enter** (Windows/Linux) or **Cmd+Enter** (Mac). That line is sent to the Console and runs. Highlight several lines first and the whole selection runs. This is the single most important shortcut today.
+
+Positron also has a **Run** ▶ button in the top-right of the editor that runs the entire file.
+
+### The Console
+
+The Console (bottom panel) is where R lives. You can type directly into it for quick experiments (`2 + 2`), but anything you want to keep belongs in the script. Code you run from the script shows up here, along with its output and any errors.
+
+### Inspect data
+
+When you create a data frame (file 02), it appears in the **Variables** pane on the right, with its row and column counts. Click the small table icon next to its name to open the **Data Explorer**, a spreadsheet-like view where you can scroll, sort, and filter without writing code. This is your best friend for checking "did that transformation do what I thought?"
+
+### View plots
+
+Plots appear in the **Plots** pane on the right. Arrows let you flip back to earlier plots; there's a save button to export.
+
+### The pipe `|>`
+
+You'll see this symbol constantly today. `x |> f()` means "take `x`, then do `f()` to it." It lets us write transformations as a readable top-to-bottom recipe:
+
+```r
+cafe |>
+  filter(category == "Coffee") |>
+  summarise(total = sum(quantity))
+```
+
+Read it aloud as: "Take `cafe`, **then** keep the Coffee rows, **then** sum the quantity." Positron can type it for you with **Ctrl+Shift+M** (Windows/Linux) or **Cmd+Shift+M** (Mac).
+
+::: {.callout-tip}
+## Not tested in this build
+Keyboard shortcuts are the standard Positron defaults as documented, but weren't machine-verified. If one doesn't work, open the Command Palette (**Ctrl/Cmd+Shift+P**) and type "Open Keyboard Shortcuts" to look it up.
+:::
+
+## The ETV framework in one picture
+
+Everything today follows the same three moves:
+
+```
+ EXTRACT                 TRANSFORM                     VISUALIZE
+ bring data into R  -->  reshape it to answer     -->  draw the answer
+ read_csv()              a specific question           ggplot()
+ htmltab()               filter(), mutate(),
+                         group_by(), summarise()
+```
+
+The framework starts with a **question**. The question decides which rows to keep, which columns to compute, and which plot to draw. Without a question, you're just pushing data around.
+
+## Troubleshooting
+
+**Package install fails with "non-zero exit status" or "compilation failed"**
+Run `install.packages("readr", type = "binary")` (Windows/Mac). If `install_github` fails on Windows, you may need Rtools from <https://cran.r-project.org/bin/windows/Rtools/>. If it still fails: skip htmltab for today and use the backup CSV in file 03.
+
+**`install_github` says "API rate limit exceeded"**
+Too many people on the same Wi-Fi hit GitHub at once. Wait two minutes and try again, or use the backup CSV.
+
+**`there is no package called 'remotes'`**
+You skipped the first install line. Run `install.packages("remotes")` first.
+
+**R can't find my file (`cannot open file 'data/cafe_orders.csv'`)**
+Your working directory is wrong. Run `getwd()`. If it doesn't end in `etv-workshop`, use **File → Open Folder…** and pick the right folder, then restart R (Console menu → Restart R). Or run `setwd("/full/path/to/etv-workshop")` as a last resort.
+
+**Positron shows "No interpreter" or a Python interpreter**
+Click the interpreter selector (top-right) and pick R. If no R appears, R isn't installed or Positron can't see it; restart Positron after installing R.
+
+**Nothing happens when I press Ctrl/Cmd+Enter**
+Make sure your cursor is in the editor (not the Console) and the file is saved as `.R`.
+
+---
+
+::: {.callout-note collapse="true"}
+## Instructor checklist
+
+- [ ] **Bring candy!** (for first correct prediction, first fixed error, first plot)
+- [ ] Open with: *"It's going to be a lot, but we got this."*
+- [ ] Project the workshop site and its QR code page (<https://gato365.github.io/etv-workshop/qr.html>)
+- [ ] **Poll: who has R installed?** Hands up. Anyone without it: pair with a neighbor or start the R installer now
+- [ ] **Poll: who has Positron installed?** Hands up. Same fix
+- [ ] Confirm everyone has the zip downloaded and unzipped
+- [ ] Poll: hands up if `getwd()` ends in `etv-workshop`. Fix stragglers now, not at minute 20
+- [ ] Poll: hands up if the four-`TRUE` checkpoint passed. Pair anyone without htmltab with a neighbor for file 03, or point them at the backup CSV
+- [ ] Have `data/top_films_backup.csv` ready in case Wikipedia or htmltab fails live
+- [ ] Watch the clock: 10 / 25 / 25 split, with wrap-up folded into the last 5 minutes of file 03
+- [ ] Remind: run code in **small pieces**; check the Data Explorer after every transformation
+:::
+
+## Live agenda (60 minutes)
+
+| Time | File | What happens |
+|---|---|---|
+| 0:00–0:10 | 01 | Orientation, confirm installs, the ETV picture |
+| 0:10–0:35 | 02 | Guided CSV activity: café orders, one question, one chart |
+| 0:35–0:55 | 03 | Wikipedia table with htmltab, then AI-assisted transformation |
+| 0:55–1:00 | 03 | Exit task and wrap-up |
+
+**Essential** items are in the main flow of each file. **Optional extensions** are marked and can be skipped or done at home.

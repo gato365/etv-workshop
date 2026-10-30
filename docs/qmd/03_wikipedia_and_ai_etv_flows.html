@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.8.27">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Dr.&nbsp;Immanuel Williams">
+
+<title>03 · Wikipedia Tables and AI-Assisted ETV Flows – ETV Workshop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<link href="../images/qr-etv-workshop.png" rel="icon" type="image/png">
+<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap-e9107cd1d46477dfac17b7c00cc0fc18.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="../styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">ETV Workshop</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../qmd/01_start_here_positron_and_r.html"> 
+<span class="menu-text">01 · Start here</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../qmd/02_csv_extract_transform_visualize.html"> 
+<span class="menu-text">02 · Café orders</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="../qmd/03_wikipedia_and_ai_etv_flows.html" aria-current="page"> 
+<span class="menu-text">03 · Wikipedia + AI</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="../qr.html"> 
+<span class="menu-text">QR code</span></a>
+  </li>  
+</ul>
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../etv-workshop.zip"> 
+<span class="menu-text">Download zip</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/gato365/etv-workshop"> <i class="bi bi-github" role="img">
+</i> 
+<span class="menu-text"></span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul class="collapse">
+  <li><a href="#time-plan-for-this-file" id="toc-time-plan-for-this-file" class="nav-link active" data-scroll-target="#time-plan-for-this-file">Time plan for this file</a></li>
+  <li><a href="#the-question" id="toc-the-question" class="nav-link" data-scroll-target="#the-question">The question</a></li>
+  <li><a href="#csv-vs.-html-whats-different-about-extract" id="toc-csv-vs.-html-whats-different-about-extract" class="nav-link" data-scroll-target="#csv-vs.-html-whats-different-about-extract">CSV vs.&nbsp;HTML: what’s different about Extract</a></li>
+  <li><a href="#the-page" id="toc-the-page" class="nav-link" data-scroll-target="#the-page">The page</a></li>
+  <li><a href="#extract-htmltab" id="toc-extract-htmltab" class="nav-link" data-scroll-target="#extract-htmltab">EXTRACT — htmltab</a></li>
+  <li><a href="#transform-two-cleaning-steps-and-a-decade-column" id="toc-transform-two-cleaning-steps-and-a-decade-column" class="nav-link" data-scroll-target="#transform-two-cleaning-steps-and-a-decade-column">TRANSFORM — two cleaning steps and a decade column</a></li>
+  <li><a href="#transform-count-films-per-decade" id="toc-transform-count-films-per-decade" class="nav-link" data-scroll-target="#transform-count-films-per-decade">TRANSFORM — count films per decade</a></li>
+  <li><a href="#visualize" id="toc-visualize" class="nav-link" data-scroll-target="#visualize">VISUALIZE</a></li>
+  <li><a href="#ai-assisted-etv-flows" id="toc-ai-assisted-etv-flows" class="nav-link" data-scroll-target="#ai-assisted-etv-flows">AI-assisted ETV flows</a></li>
+  <li><a href="#troubleshooting" id="toc-troubleshooting" class="nav-link" data-scroll-target="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#exit-task-5-minutes-essential" id="toc-exit-task-5-minutes-essential" class="nav-link" data-scroll-target="#exit-task-5-minutes-essential">Exit task (5 minutes, essential)</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">03 · Wikipedia Tables and AI-Assisted ETV Flows</h1>
+<p class="subtitle lead">ETV Workshop · extraction from HTML, then question-driven AI (25 minutes)</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Dr.&nbsp;Immanuel Williams </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="time-plan-for-this-file" class="level2">
+<h2 class="anchored" data-anchor-id="time-plan-for-this-file">Time plan for this file</h2>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Minutes</th>
+<th>Part</th>
+<th>Essential?</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0:35–0:43</td>
+<td>Extract a Wikipedia table with htmltab, clean it, one chart</td>
+<td>Essential</td>
+</tr>
+<tr class="even">
+<td>0:43–0:55</td>
+<td>AI-assisted ETV: you transform, then AI extends</td>
+<td>Essential</td>
+</tr>
+<tr class="odd">
+<td>0:55–1:00</td>
+<td>Exit task and wrap-up</td>
+<td>Essential</td>
+</tr>
+</tbody>
+</table>
+<p>Everything marked <strong>optional</strong> can be done at home.</p>
+</section>
+<section id="the-question" class="level2">
+<h2 class="anchored" data-anchor-id="the-question">The question</h2>
+<blockquote class="blockquote">
+<p><strong>Which decade produced the most of the 50 highest-grossing films of all time?</strong></p>
+</blockquote>
+<p>Write your guess down. (Hint: think about when ticket prices and global releases grew.)</p>
+</section>
+<section id="csv-vs.-html-whats-different-about-extract" class="level2">
+<h2 class="anchored" data-anchor-id="csv-vs.-html-whats-different-about-extract">CSV vs.&nbsp;HTML: what’s different about Extract</h2>
+<p>In file 02 the data was already a table in a file built for computers. A web page is built for <em>humans</em>: the table you see is wrapped in HTML tags, mixed in with headings, images, footnotes, and navigation. Extracting it means:</p>
+<ol type="1">
+<li><strong>Downloading the page</strong> (all of it, not just the table).</li>
+<li><strong>Finding the right table</strong> among several on the page.</li>
+<li><strong>Reading the cells</strong> and reconstructing rows and columns, including cells that span multiple rows or columns.</li>
+<li><strong>Cleaning out</strong> footnote markers, citation numbers, and formatting that was meant for eyes, not math.</li>
+</ol>
+<p><code>read_csv()</code> does none of this because a CSV needs none of it. <code>htmltab()</code> does steps 1–3 for you and some of step 4. The rest of the cleaning is on you, which is why checking your result matters even more here.</p>
+</section>
+<section id="the-page" class="level2">
+<h2 class="anchored" data-anchor-id="the-page">The page</h2>
+<p><strong>URL:</strong> <a href="https://en.wikipedia.org/wiki/List_of_highest-grossing_films" class="uri">https://en.wikipedia.org/wiki/List_of_highest-grossing_films</a></p>
+<p>The first table on the page lists the top 50 films by worldwide box-office gross (not adjusted for inflation). Its columns, as shown on the page: <strong>Rank, Peak, Title, Worldwide gross, Year, Ref</strong>. Titles of films still in theaters carry a dagger (†).</p>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Warning</span>This table changes
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Wikipedia updates this list as films are released. The numbers in your extract will differ from the backup CSV and from the checkpoints below. The <em>structure</em> and the <em>code</em> are what matter. The backup <code>data/top_films_backup.csv</code> was saved on 2026-10-28.</p>
+</div>
+</div>
+</section>
+<section id="extract-htmltab" class="level2">
+<h2 class="anchored" data-anchor-id="extract-htmltab">EXTRACT — htmltab</h2>
+<p>Add the package to your script and extract. We select the table with an XPath expression that means “the first table on the page with the CSS class <code>wikitable</code>.” This skips any sidebar or navigation tables and is more robust than guessing a table number.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(htmltab)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>films_url <span class="ot">&lt;-</span> <span class="st">"https://en.wikipedia.org/wiki/List_of_highest-grossing_films"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>top_films <span class="ot">&lt;-</span> <span class="fu">htmltab</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">doc   =</span> films_url,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">which =</span> <span class="st">"//table[contains(@class, 'wikitable')][1]"</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Checkpoint:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(top_films)      <span class="co"># expect 50 rows; 5 or 6 columns</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(top_films)    <span class="co"># expect "Rank" "Peak" "Title" "Worldwide gross" "Year" (maybe "Ref")</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(top_films)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Two things to notice in <code>glimpse()</code>:</p>
+<ul>
+<li><strong>Every column is <code>chr</code></strong> (text), even Rank and Year. htmltab doesn’t guess types; it hands you the cell text. We’ll convert.</li>
+<li>htmltab removes superscript citation markers by default, so the <code>Ref</code> column may come through empty and be dropped, or it may survive as an empty column. Either way we won’t use it.</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>If htmltab fails (no internet, package didn’t install, Wikipedia changed)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Use the backup. The column names are identical, so <strong>every line of code below works unchanged</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>top_films <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="st">"data/top_films_backup.csv"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>One difference: <code>read_csv()</code> will guess that <code>Rank</code>, <code>Peak</code>, and <code>Year</code> are numbers while <code>Worldwide gross</code> stays text. The cleaning code below handles both cases.</p>
+</div>
+</div>
+</section>
+<section id="transform-two-cleaning-steps-and-a-decade-column" class="level2">
+<h2 class="anchored" data-anchor-id="transform-two-cleaning-steps-and-a-decade-column">TRANSFORM — two cleaning steps and a decade column</h2>
+<p><strong>Cleaning step 1: numbers stored as text.</strong> <code>"$2,937,323,455"</code> is text. <code>parse_number()</code> (readr) strips the <code>$</code> and commas. <code>Rank</code> and <code>Year</code> are plain digits, so <code>as.numeric()</code> is enough and works whether they arrived as text (htmltab) or already-numeric (backup CSV).</p>
+<p><strong>Cleaning step 2: footnote markers.</strong> The dagger on <code>"Avengers: Endgame †"</code> is information (still in theaters), so rather than deleting it we record it as its own TRUE/FALSE column, then strip it from the title. <code>grepl()</code> tests whether a pattern appears; <code>gsub()</code> replaces it; <code>trimws()</code> removes leftover spaces.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>films_clean <span class="ot">&lt;-</span> top_films <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(Rank, Peak, Title, <span class="st">`</span><span class="at">Worldwide gross</span><span class="st">`</span>, Year) <span class="sc">|&gt;</span>   <span class="co"># drops Ref if present</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">rank        =</span> <span class="fu">as.numeric</span>(Rank),</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">year        =</span> <span class="fu">as.numeric</span>(Year),</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">gross       =</span> <span class="fu">parse_number</span>(<span class="st">`</span><span class="at">Worldwide gross</span><span class="st">`</span>),</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">in_theaters =</span> <span class="fu">grepl</span>(<span class="st">"†"</span>, Title),</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">title       =</span> <span class="fu">trimws</span>(<span class="fu">gsub</span>(<span class="st">"†"</span>, <span class="st">""</span>, Title)),</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">decade      =</span> <span class="fu">floor</span>(year <span class="sc">/</span> <span class="dv">10</span>) <span class="sc">*</span> <span class="dv">10</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(rank, title, year, decade, gross, in_theaters)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Why backticks around <code>`Worldwide gross`</code>? Column names with spaces need them. Our new names are lowercase with underscores so we never need backticks again.</p>
+<p>Why <code>floor(year / 10) * 10</code>? 2015 / 10 = 201.5, floor → 201, × 10 → 2010. Every year from 2010 to 2019 lands on 2010. <strong>Remember this line; it comes back in the AI section.</strong></p>
+<p><strong>Checkpoint:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(films_clean)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Six columns; <code>rank</code>, <code>year</code>, <code>decade</code>, <code>gross</code> are <code>dbl</code>; <code>in_theaters</code> is <code>lgl</code>. Then:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>films_clean <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(title, gross, decade, in_theaters) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>title</th>
+<th>gross</th>
+<th>decade</th>
+<th>in_theaters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Avengers: Endgame</td>
+<td>2937323455</td>
+<td>2010</td>
+<td>TRUE</td>
+</tr>
+<tr class="even">
+<td>Avatar</td>
+<td>2923710708</td>
+<td>2000</td>
+<td>FALSE</td>
+</tr>
+<tr class="odd">
+<td>…</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(films_clean<span class="sc">$</span>gross)   <span class="co"># min ≈ 1.06e9, max ≈ 2.9e9, no NAs</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(films_clean<span class="sc">$</span>year)) <span class="co"># 0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>If <code>gross</code> has <code>NA</code>s, a row’s text didn’t parse. Look at it: <code>films_clean |&gt; filter(is.na(gross))</code>.</p>
+</section>
+<section id="transform-count-films-per-decade" class="level2">
+<h2 class="anchored" data-anchor-id="transform-count-films-per-decade">TRANSFORM — count films per decade</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>films_by_decade <span class="ot">&lt;-</span> films_clean <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(decade) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">films     =</span> <span class="fu">n</span>(),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_gross =</span> <span class="fu">mean</span>(gross)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>films_by_decade</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Checkpoint (backup CSV, saved 2026-10-28):</strong></p>
+<pre><code>  decade films   avg_gross
+   &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;
+1   1990     1 2257906828
+2   2000     3 1712629293
+3   2010    32 1354249742
+4   2020    14 1691370099</code></pre>
+<p>The row counts should add to 50. If they add to 49 or 51, a row was lost or duplicated in cleaning.</p>
+</section>
+<section id="visualize" class="level2">
+<h2 class="anchored" data-anchor-id="visualize">VISUALIZE</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(films_by_decade, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(decade), <span class="at">y =</span> films)) <span class="sc">+</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#3b4f8c"</span>) <span class="sc">+</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title    =</span> <span class="st">"The 2010s dominate the all-time top 50"</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">subtitle =</span> <span class="st">"Number of films among the 50 highest-grossing (not inflation-adjusted)"</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x        =</span> <span class="st">"Decade"</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y        =</span> <span class="st">"Films in the top 50"</span>,</span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">caption  =</span> <span class="st">"Source: Wikipedia, List of highest-grossing films (retrieved 2026-10-28)"</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>factor(decade)</code> tells ggplot to treat decades as labeled categories (so you get bars labeled 1990, 2000, 2010, 2020) rather than as a continuous number line with awkward gaps.</p>
+<p><strong>Checkpoint:</strong> four bars; 2010 towers over the rest at 32.</p>
+<p><strong>Plain-language answer:</strong> Of the 50 highest-grossing films, 32 (64%) were released in the 2010s, 14 in the 2020s, 3 in the 2000s, and just one (Titanic) in the 1990s. This is a list of <em>unadjusted</em> dollars, so it tilts toward recent years when ticket prices were higher and international markets larger. It tells us which era sold the most dollars of tickets, not which era made the most beloved films. Note also that the 2020s count is still growing; four films on the list are still in theaters.</p>
+</section>
+<section id="ai-assisted-etv-flows" class="level2">
+<h2 class="anchored" data-anchor-id="ai-assisted-etv-flows">AI-assisted ETV flows</h2>
+<p>You’ve just done an ETV cycle by hand. Now you’ll use an AI assistant (Claude, ChatGPT, Gemini, or similar) to do the <em>next</em> cycle faster, <strong>without giving up control of whether the answer is right.</strong></p>
+<p>The flow is always:</p>
+<pre><code>Question → transformation plan → R code → checks → visualization → interpretation</code></pre>
+<p>The AI is good at the middle (plan, code). You own the ends (the question, and deciding whether the result actually answers it) and the checks in between. Never paste AI code and run it all at once. Run it <strong>one pipe step at a time</strong> and look at what comes out.</p>
+<section id="step-1-you-do-a-small-one-yourself-3-minutes" class="level3">
+<h3 class="anchored" data-anchor-id="step-1-you-do-a-small-one-yourself-3-minutes">Step 1: you do a small one yourself (3 minutes)</h3>
+<p>New question: <strong>Of the films still in theaters, which has the highest gross?</strong></p>
+<p>Write it with what you know: <code>filter()</code>, <code>arrange()</code>, <code>desc()</code>. (Answer: a one-row or few-row table, sorted.)</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>films_clean <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(in_theaters) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(gross))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Four rows (as of the backup); Spider-Man: Brand New Day on top. Easy. The point is that <em>you</em> decided the steps.</p>
+</section>
+<section id="step-2-the-prompt-template" class="level3">
+<h3 class="anchored" data-anchor-id="step-2-the-prompt-template">Step 2: the prompt template</h3>
+<p>Copy this into your AI tool and fill in the brackets. Every bracket exists for a reason: the AI cannot see your data, so you have to describe it precisely, and you need to constrain it so it doesn’t invent columns or quietly drop rows.</p>
+<pre><code>I am working in R with a data frame named `films_clean`. Please help me answer this question:
+
+QUESTION: [your question here]
+
+DATA FRAME: films_clean (50 rows). Columns and types:
+- rank: numeric (1 to 50)
+- title: character
+- year: numeric (release year, e.g. 2019)
+- decade: numeric (1990, 2000, 2010, 2020; computed as floor(year/10)*10)
+- gross: numeric (worldwide gross in US dollars, e.g. 2937323455)
+- in_theaters: logical (TRUE if the film is still in release)
+
+SAMPLE ROWS (first 3):
+rank  title              year  decade  gross       in_theaters
+1     Avengers: Endgame  2019  2010    2937323455  TRUE
+2     Avatar             2009  2000    2923710708  FALSE
+3     Spider-Man: Brand New Day  2026  2020  2512865567  TRUE
+
+CONSTRAINTS:
+- Use only base R plus the packages readr, dplyr, and ggplot2. Do not load tidyverse or other packages.
+- Use the native pipe |&gt; (not %&gt;%).
+- Do not invent columns that are not listed above.
+- There are no missing values. Do not add na.rm or filter out NAs unless I ask.
+- Do not change the number of rows unless the question requires it, and if it does, say so.
+
+PLEASE RESPOND IN THIS ORDER:
+1. A plain-language transformation plan (2 to 5 numbered steps) BEFORE any code.
+2. The R code, built one pipe step at a time with a short comment per step.
+3. Check code I can run to verify: the row count after each filter or group, any NAs introduced, the groups that were created, and the final summary table.
+4. A ggplot2 chart whose title states the answer.
+5. One sentence stating what the result means in plain language and one limitation.</code></pre>
+</section>
+<section id="step-3-use-ai-to-extend-the-analysis-6-minutes" class="level3">
+<h3 class="anchored" data-anchor-id="step-3-use-ai-to-extend-the-analysis-6-minutes">Step 3: use AI to extend the analysis (6 minutes)</h3>
+<p>Your new question: <strong>Which decade had the highest <em>average</em> gross among the top 50, and is the leading decade also the one with the most films?</strong></p>
+<p>Paste the template with that question. Below is an example of a plausible AI response. <strong>Read it before you run anything.</strong> It contains one mistake.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>Example AI response (contains an error; find it)
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Transformation plan</strong></p>
+<ol type="1">
+<li>Start from <code>films_clean</code> (50 rows).</li>
+<li>Group the films by decade.</li>
+<li>For each decade compute the number of films and the mean of <code>gross</code>.</li>
+<li>Sort the result so the highest average gross is first.</li>
+<li>Plot average gross by decade as a bar chart.</li>
+</ol>
+<p><strong>Code</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>decade_avg <span class="ot">&lt;-</span> films_clean <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">decade =</span> <span class="fu">round</span>(year, <span class="sc">-</span><span class="dv">1</span>)) <span class="sc">|&gt;</span>          <span class="co"># bucket each year into its decade</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(decade) <span class="sc">|&gt;</span>                          <span class="co"># one group per decade</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">films     =</span> <span class="fu">n</span>(),                           <span class="co"># how many films</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_gross =</span> <span class="fu">mean</span>(gross)                    <span class="co"># average worldwide gross</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_gross))                     <span class="co"># highest average first</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>decade_avg</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Checks</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(films_clean)                 <span class="co"># 50, unchanged</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(<span class="fu">is.na</span>(decade_avg<span class="sc">$</span>avg_gross))  <span class="co"># 0</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="fu">sum</span>(decade_avg<span class="sc">$</span>films)             <span class="co"># should be 50</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>decade_avg                        <span class="co"># inspect the groups</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Chart</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(decade_avg, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">factor</span>(decade), <span class="at">y =</span> avg_gross <span class="sc">/</span> <span class="fl">1e9</span>)) <span class="sc">+</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#3b4f8c"</span>) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Average gross per top-50 film, by decade"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Decade"</span>, <span class="at">y =</span> <span class="st">"Average gross (billions USD)"</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Interpretation</strong></p>
+<p>The decade with the highest average gross is the one at the top of <code>decade_avg</code>. Limitation: these are unadjusted dollars, so later decades are inflated by higher ticket prices.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="step-4-find-and-fix-the-mistake-3-minutes" class="level3">
+<h3 class="anchored" data-anchor-id="step-4-find-and-fix-the-mistake-3-minutes">Step 4: find and fix the mistake (3 minutes)</h3>
+<p>Run the code <strong>one step at a time</strong>. After the <code>mutate()</code> line, look at the result:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>films_clean <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">decade_ai =</span> <span class="fu">round</span>(year, <span class="sc">-</span><span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(title, year, decade, decade_ai) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(decade <span class="sc">!=</span> decade_ai)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Something is wrong. <code>round(year, -1)</code> rounds to the <em>nearest</em> ten, so <strong>2015 becomes 2020</strong> and <strong>2005 becomes 2010</strong>. That isn’t a decade; it’s a rounding bucket. Films from 2015–2019 get moved into the “2020s.” The <code>films</code> column will still sum to 50 (so that check passes!), and there are no NAs (that check passes too), yet the groups are wrong. The check that catches it is the one the template asked for: <strong>inspect the groups that were created</strong>, and compare against a column you already trust.</p>
+<p>The fix is the line you already wrote earlier in this file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>decade_avg <span class="ot">&lt;-</span> films_clean <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(decade) <span class="sc">|&gt;</span>                 <span class="co"># use the decade column we already built with floor()</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">films =</span> <span class="fu">n</span>(), <span class="at">avg_gross =</span> <span class="fu">mean</span>(gross)) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_gross))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>decade_avg</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><strong>Checkpoint (backup data):</strong> the 1990s lead on average (one film, Titanic, at $2.26B), then the 2000s (~$1.71B), then the 2020s (~$1.69B), with the 2010s last (~$1.35B) despite having 32 films. So the answer to the question is <strong>no</strong>: the decade with the most films has the <em>lowest</em> average. Many films, modest grosses each, versus a few blockbusters.</p>
+<p>Candy for the first person who can say <em>why</em> a one-film decade “winning” on average is a weak result. (Averages of one are not averages.)</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>What to take from this
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>The AI’s plan was fine. The code was <em>almost</em> right. The mistake was a single function choice that produced plausible-looking output and passed two of the three checks.</li>
+<li>The AI also ignored a constraint: it rebuilt <code>decade</code> even though the template said the column already existed. Re-deriving a column you were given is a red flag.</li>
+<li>You caught it by running one step and comparing to something you trusted. That’s the habit.</li>
+</ul>
+</div>
+</div>
+</section>
+<section id="optional-extension" class="level3">
+<h3 class="anchored" data-anchor-id="optional-extension">Optional extension</h3>
+<p>Ask the AI a new question of your own about <code>films_clean</code>. Good ones: “How many films per year since 2015?” “What share of the total top-50 gross is from films still in theaters?” Run its code step by step and write one sentence on whether the result answers your question.</p>
+</section>
+</section>
+<section id="troubleshooting" class="level2">
+<h2 class="anchored" data-anchor-id="troubleshooting">Troubleshooting</h2>
+<p><strong><code>htmltab</code> error: “couldn’t find table” / <code>which</code> didn’t match</strong> — Wikipedia changed the page. Try <code>which = 1</code> (first table on the page), or open the URL in a browser, right-click the table, Inspect, and look at its <code>class</code>. Or use the backup CSV.</p>
+<p><strong><code>htmltab</code> returns a table but the columns look wrong</strong> — the table may have a two-row header. Try <code>htmltab(doc = films_url, which = "...", header = 1)</code>. Or use the backup CSV; the structure of this activity doesn’t depend on live data.</p>
+<p><strong>HTTP error 403 / 429</strong> — Wikipedia is rate-limiting the room’s shared Wi-Fi. Use the backup CSV.</p>
+<p><strong><code>parse_number()</code> error “is.character(x) is not TRUE”</strong> — you passed it a column that’s already numeric (this happens with the backup CSV for <code>Year</code>). Use <code>as.numeric()</code> for those; keep <code>parse_number()</code> for the dollar column.</p>
+<p><strong>Dagger (†) didn’t match</strong> — your file encoding may have mangled it. Run <code>grepl("†", Title)</code> instead, which is the same character written as a Unicode code.</p>
+<p><strong>AI code uses <code>%&gt;%</code> or <code>library(tidyverse)</code></strong> — it ignored your constraints. Paste back: “Please follow the constraints: native pipe, individual packages.” If it keeps ignoring them, that itself is useful information about the tool.</p>
+</section>
+<section id="exit-task-5-minutes-essential" class="level2">
+<h2 class="anchored" data-anchor-id="exit-task-5-minutes-essential">Exit task (5 minutes, essential)</h2>
+<p>On an index card or in a shared doc, write:</p>
+<ol type="1">
+<li><strong>A question</strong> you could answer with data you can get (any data, not today’s).</li>
+<li><strong>Its ETV steps:</strong> where would you <em>Extract</em> the data from and with what function? What <em>Transform</em> steps (one or two dplyr verbs) would you need? What <em>Visualization</em> would show the answer?</li>
+<li><strong>One AI check:</strong> describe, in one sentence, how you confirmed that one AI-generated transformation today was (or wasn’t) correct. Name the specific thing you compared.</li>
+</ol>
+<p>Hand it in on your way out. Take candy.</p>
+<hr>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>What was verified and what wasn’t
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><strong>Verified on 2026-10-28:</strong> the Wikipedia URL, the position of the table as the first <code>wikitable</code> on the page, its displayed column names, and all 50 rows (saved to the backup CSV). The htmltab install command and CRAN archival date (2022-11-11) were checked against the GitHub README and CRAN.</li>
+<li><strong>Not tested:</strong> the R code was not executed when these materials were generated (no R available in the build environment). The exact column names htmltab returns, in particular whether the <code>Ref</code> column survives, should be confirmed live with <code>names(top_films)</code>; the <code>select()</code> line is written to work either way. Checkpoint numbers were computed from the backup CSV with a separate tool.</li>
+</ul>
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/gato365\.github\.io\/etv-workshop\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>ETV Workshop materials by Dr.&nbsp;Immanuel Williams. Café data is synthetic. Film table from Wikipedia contributors (CC BY-SA 4.0), retrieved 2026-10-28.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+<p>Built with <a href="https://quarto.org">Quarto</a></p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

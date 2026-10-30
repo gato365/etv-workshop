@@ -1,0 +1,16 @@
+---
+title: "Scan to get the workshop materials"
+toc: false
+---
+
+::: {.qr-big}
+![](images/qr-etv-workshop.png){fig-alt="QR code linking to https://gato365.github.io/etv-workshop/"}
+
+<div class="url">gato365.github.io/etv-workshop</div>
+
+Then tap **Download zip** on the home page.
+:::
+
+::: {.text-muted .text-center style="margin-top:2rem"}
+Project this page. Need a printable copy? [PNG](images/qr-etv-workshop.png) · [SVG](images/qr-etv-workshop.svg)
+:::

@@ -1,0 +1,381 @@
+---
+title: "03 · Wikipedia Tables and AI-Assisted ETV Flows"
+subtitle: "ETV Workshop · extraction from HTML, then question-driven AI (25 minutes)"
+author: "Dr. Immanuel Williams"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-copy: true
+    theme: flatly
+execute:
+  eval: false
+---
+
+## Time plan for this file
+
+| Minutes | Part | Essential? |
+|---|---|---|
+| 0:35–0:43 | Extract a Wikipedia table with htmltab, clean it, one chart | Essential |
+| 0:43–0:55 | AI-assisted ETV: you transform, then AI extends | Essential |
+| 0:55–1:00 | Exit task and wrap-up | Essential |
+
+Everything marked **optional** can be done at home.
+
+## The question
+
+> **Which decade produced the most of the 50 highest-grossing films of all time?**
+
+Write your guess down. (Hint: think about when ticket prices and global releases grew.)
+
+## CSV vs. HTML: what's different about Extract
+
+In file 02 the data was already a table in a file built for computers. A web page is built for *humans*: the table you see is wrapped in HTML tags, mixed in with headings, images, footnotes, and navigation. Extracting it means:
+
+1. **Downloading the page** (all of it, not just the table).
+2. **Finding the right table** among several on the page.
+3. **Reading the cells** and reconstructing rows and columns, including cells that span multiple rows or columns.
+4. **Cleaning out** footnote markers, citation numbers, and formatting that was meant for eyes, not math.
+
+`read_csv()` does none of this because a CSV needs none of it. `htmltab()` does steps 1–3 for you and some of step 4. The rest of the cleaning is on you, which is why checking your result matters even more here.
+
+## The page
+
+**URL:** <https://en.wikipedia.org/wiki/List_of_highest-grossing_films>
+
+The first table on the page lists the top 50 films by worldwide box-office gross (not adjusted for inflation). Its columns, as shown on the page: **Rank, Peak, Title, Worldwide gross, Year, Ref**. Titles of films still in theaters carry a dagger (†).
+
+::: {.callout-warning}
+## This table changes
+Wikipedia updates this list as films are released. The numbers in your extract will differ from the backup CSV and from the checkpoints below. The *structure* and the *code* are what matter. The backup `data/top_films_backup.csv` was saved on 2026-10-28.
+:::
+
+## EXTRACT — htmltab
+
+Add the package to your script and extract. We select the table with an XPath expression that means "the first table on the page with the CSS class `wikitable`." This skips any sidebar or navigation tables and is more robust than guessing a table number.
+
+```r
+library(htmltab)
+
+films_url <- "https://en.wikipedia.org/wiki/List_of_highest-grossing_films"
+
+top_films <- htmltab(
+  doc   = films_url,
+  which = "//table[contains(@class, 'wikitable')][1]"
+)
+```
+
+**Checkpoint:**
+
+```r
+dim(top_films)      # expect 50 rows; 5 or 6 columns
+names(top_films)    # expect "Rank" "Peak" "Title" "Worldwide gross" "Year" (maybe "Ref")
+glimpse(top_films)
+```
+
+Two things to notice in `glimpse()`:
+
+- **Every column is `chr`** (text), even Rank and Year. htmltab doesn't guess types; it hands you the cell text. We'll convert.
+- htmltab removes superscript citation markers by default, so the `Ref` column may come through empty and be dropped, or it may survive as an empty column. Either way we won't use it.
+
+::: {.callout-important}
+## If htmltab fails (no internet, package didn't install, Wikipedia changed)
+Use the backup. The column names are identical, so **every line of code below works unchanged**:
+
+```r
+top_films <- read_csv("data/top_films_backup.csv")
+```
+
+One difference: `read_csv()` will guess that `Rank`, `Peak`, and `Year` are numbers while `Worldwide gross` stays text. The cleaning code below handles both cases.
+:::
+
+## TRANSFORM — two cleaning steps and a decade column
+
+**Cleaning step 1: numbers stored as text.** `"$2,937,323,455"` is text. `parse_number()` (readr) strips the `$` and commas. `Rank` and `Year` are plain digits, so `as.numeric()` is enough and works whether they arrived as text (htmltab) or already-numeric (backup CSV).
+
+**Cleaning step 2: footnote markers.** The dagger on `"Avengers: Endgame †"` is information (still in theaters), so rather than deleting it we record it as its own TRUE/FALSE column, then strip it from the title. `grepl()` tests whether a pattern appears; `gsub()` replaces it; `trimws()` removes leftover spaces.
+
+```r
+films_clean <- top_films |>
+  select(Rank, Peak, Title, `Worldwide gross`, Year) |>   # drops Ref if present
+  mutate(
+    rank        = as.numeric(Rank),
+    year        = as.numeric(Year),
+    gross       = parse_number(`Worldwide gross`),
+    in_theaters = grepl("†", Title),
+    title       = trimws(gsub("†", "", Title)),
+    decade      = floor(year / 10) * 10
+  ) |>
+  select(rank, title, year, decade, gross, in_theaters)
+```
+
+Why backticks around `` `Worldwide gross` ``? Column names with spaces need them. Our new names are lowercase with underscores so we never need backticks again.
+
+Why `floor(year / 10) * 10`? 2015 / 10 = 201.5, floor → 201, × 10 → 2010. Every year from 2010 to 2019 lands on 2010. **Remember this line; it comes back in the AI section.**
+
+**Checkpoint:**
+
+```r
+glimpse(films_clean)
+```
+
+Six columns; `rank`, `year`, `decade`, `gross` are `dbl`; `in_theaters` is `lgl`. Then:
+
+```r
+films_clean |>
+  select(title, gross, decade, in_theaters) |>
+  head(5)
+```
+
+| title | gross | decade | in_theaters |
+|---|---|---|---|
+| Avengers: Endgame | 2937323455 | 2010 | TRUE |
+| Avatar | 2923710708 | 2000 | FALSE |
+| … | | | |
+
+```r
+summary(films_clean$gross)   # min ≈ 1.06e9, max ≈ 2.9e9, no NAs
+sum(is.na(films_clean$year)) # 0
+```
+
+If `gross` has `NA`s, a row's text didn't parse. Look at it: `films_clean |> filter(is.na(gross))`.
+
+## TRANSFORM — count films per decade
+
+```r
+films_by_decade <- films_clean |>
+  group_by(decade) |>
+  summarise(
+    films     = n(),
+    avg_gross = mean(gross)
+  )
+
+films_by_decade
+```
+
+**Checkpoint (backup CSV, saved 2026-10-28):**
+
+```
+  decade films   avg_gross
+   <dbl> <int>       <dbl>
+1   1990     1 2257906828
+2   2000     3 1712629293
+3   2010    32 1354249742
+4   2020    14 1691370099
+```
+
+The row counts should add to 50. If they add to 49 or 51, a row was lost or duplicated in cleaning.
+
+## VISUALIZE
+
+```r
+ggplot(films_by_decade, aes(x = factor(decade), y = films)) +
+  geom_col(fill = "#3b4f8c") +
+  labs(
+    title    = "The 2010s dominate the all-time top 50",
+    subtitle = "Number of films among the 50 highest-grossing (not inflation-adjusted)",
+    x        = "Decade",
+    y        = "Films in the top 50",
+    caption  = "Source: Wikipedia, List of highest-grossing films (retrieved 2026-10-28)"
+  ) +
+  theme_minimal()
+```
+
+`factor(decade)` tells ggplot to treat decades as labeled categories (so you get bars labeled 1990, 2000, 2010, 2020) rather than as a continuous number line with awkward gaps.
+
+**Checkpoint:** four bars; 2010 towers over the rest at 32.
+
+**Plain-language answer:** Of the 50 highest-grossing films, 32 (64%) were released in the 2010s, 14 in the 2020s, 3 in the 2000s, and just one (Titanic) in the 1990s. This is a list of *unadjusted* dollars, so it tilts toward recent years when ticket prices were higher and international markets larger. It tells us which era sold the most dollars of tickets, not which era made the most beloved films. Note also that the 2020s count is still growing; four films on the list are still in theaters.
+
+## AI-assisted ETV flows
+
+You've just done an ETV cycle by hand. Now you'll use an AI assistant (Claude, ChatGPT, Gemini, or similar) to do the *next* cycle faster, **without giving up control of whether the answer is right.**
+
+The flow is always:
+
+```
+Question → transformation plan → R code → checks → visualization → interpretation
+```
+
+The AI is good at the middle (plan, code). You own the ends (the question, and deciding whether the result actually answers it) and the checks in between. Never paste AI code and run it all at once. Run it **one pipe step at a time** and look at what comes out.
+
+### Step 1: you do a small one yourself (3 minutes)
+
+New question: **Of the films still in theaters, which has the highest gross?**
+
+Write it with what you know: `filter()`, `arrange()`, `desc()`. (Answer: a one-row or few-row table, sorted.)
+
+```r
+films_clean |>
+  filter(in_theaters) |>
+  arrange(desc(gross))
+```
+
+Four rows (as of the backup); Spider-Man: Brand New Day on top. Easy. The point is that *you* decided the steps.
+
+### Step 2: the prompt template
+
+Copy this into your AI tool and fill in the brackets. Every bracket exists for a reason: the AI cannot see your data, so you have to describe it precisely, and you need to constrain it so it doesn't invent columns or quietly drop rows.
+
+```
+I am working in R with a data frame named `films_clean`. Please help me answer this question:
+
+QUESTION: [your question here]
+
+DATA FRAME: films_clean (50 rows). Columns and types:
+- rank: numeric (1 to 50)
+- title: character
+- year: numeric (release year, e.g. 2019)
+- decade: numeric (1990, 2000, 2010, 2020; computed as floor(year/10)*10)
+- gross: numeric (worldwide gross in US dollars, e.g. 2937323455)
+- in_theaters: logical (TRUE if the film is still in release)
+
+SAMPLE ROWS (first 3):
+rank  title              year  decade  gross       in_theaters
+1     Avengers: Endgame  2019  2010    2937323455  TRUE
+2     Avatar             2009  2000    2923710708  FALSE
+3     Spider-Man: Brand New Day  2026  2020  2512865567  TRUE
+
+CONSTRAINTS:
+- Use only base R plus the packages readr, dplyr, and ggplot2. Do not load tidyverse or other packages.
+- Use the native pipe |> (not %>%).
+- Do not invent columns that are not listed above.
+- There are no missing values. Do not add na.rm or filter out NAs unless I ask.
+- Do not change the number of rows unless the question requires it, and if it does, say so.
+
+PLEASE RESPOND IN THIS ORDER:
+1. A plain-language transformation plan (2 to 5 numbered steps) BEFORE any code.
+2. The R code, built one pipe step at a time with a short comment per step.
+3. Check code I can run to verify: the row count after each filter or group, any NAs introduced, the groups that were created, and the final summary table.
+4. A ggplot2 chart whose title states the answer.
+5. One sentence stating what the result means in plain language and one limitation.
+```
+
+### Step 3: use AI to extend the analysis (6 minutes)
+
+Your new question: **Which decade had the highest *average* gross among the top 50, and is the leading decade also the one with the most films?**
+
+Paste the template with that question. Below is an example of a plausible AI response. **Read it before you run anything.** It contains one mistake.
+
+::: {.callout-note collapse="true"}
+## Example AI response (contains an error; find it)
+
+**Transformation plan**
+
+1. Start from `films_clean` (50 rows).
+2. Group the films by decade.
+3. For each decade compute the number of films and the mean of `gross`.
+4. Sort the result so the highest average gross is first.
+5. Plot average gross by decade as a bar chart.
+
+**Code**
+
+```r
+decade_avg <- films_clean |>
+  mutate(decade = round(year, -1)) |>          # bucket each year into its decade
+  group_by(decade) |>                          # one group per decade
+  summarise(
+    films     = n(),                           # how many films
+    avg_gross = mean(gross)                    # average worldwide gross
+  ) |>
+  arrange(desc(avg_gross))                     # highest average first
+
+decade_avg
+```
+
+**Checks**
+
+```r
+nrow(films_clean)                 # 50, unchanged
+sum(is.na(decade_avg$avg_gross))  # 0
+sum(decade_avg$films)             # should be 50
+decade_avg                        # inspect the groups
+```
+
+**Chart**
+
+```r
+ggplot(decade_avg, aes(x = factor(decade), y = avg_gross / 1e9)) +
+  geom_col(fill = "#3b4f8c") +
+  labs(
+    title = "Average gross per top-50 film, by decade",
+    x = "Decade", y = "Average gross (billions USD)"
+  ) +
+  theme_minimal()
+```
+
+**Interpretation**
+
+The decade with the highest average gross is the one at the top of `decade_avg`. Limitation: these are unadjusted dollars, so later decades are inflated by higher ticket prices.
+:::
+
+### Step 4: find and fix the mistake (3 minutes)
+
+Run the code **one step at a time**. After the `mutate()` line, look at the result:
+
+```r
+films_clean |>
+  mutate(decade_ai = round(year, -1)) |>
+  select(title, year, decade, decade_ai) |>
+  filter(decade != decade_ai)
+```
+
+Something is wrong. `round(year, -1)` rounds to the *nearest* ten, so **2015 becomes 2020** and **2005 becomes 2010**. That isn't a decade; it's a rounding bucket. Films from 2015–2019 get moved into the "2020s." The `films` column will still sum to 50 (so that check passes!), and there are no NAs (that check passes too), yet the groups are wrong. The check that catches it is the one the template asked for: **inspect the groups that were created**, and compare against a column you already trust.
+
+The fix is the line you already wrote earlier in this file:
+
+```r
+decade_avg <- films_clean |>
+  group_by(decade) |>                 # use the decade column we already built with floor()
+  summarise(films = n(), avg_gross = mean(gross)) |>
+  arrange(desc(avg_gross))
+
+decade_avg
+```
+
+**Checkpoint (backup data):** the 1990s lead on average (one film, Titanic, at $2.26B), then the 2000s (~$1.71B), then the 2020s (~$1.69B), with the 2010s last (~$1.35B) despite having 32 films. So the answer to the question is **no**: the decade with the most films has the *lowest* average. Many films, modest grosses each, versus a few blockbusters.
+
+Candy for the first person who can say *why* a one-film decade "winning" on average is a weak result. (Averages of one are not averages.)
+
+::: {.callout-tip}
+## What to take from this
+- The AI's plan was fine. The code was *almost* right. The mistake was a single function choice that produced plausible-looking output and passed two of the three checks.
+- The AI also ignored a constraint: it rebuilt `decade` even though the template said the column already existed. Re-deriving a column you were given is a red flag.
+- You caught it by running one step and comparing to something you trusted. That's the habit.
+:::
+
+### Optional extension
+
+Ask the AI a new question of your own about `films_clean`. Good ones: "How many films per year since 2015?" "What share of the total top-50 gross is from films still in theaters?" Run its code step by step and write one sentence on whether the result answers your question.
+
+## Troubleshooting
+
+**`htmltab` error: "couldn't find table" / `which` didn't match** — Wikipedia changed the page. Try `which = 1` (first table on the page), or open the URL in a browser, right-click the table, Inspect, and look at its `class`. Or use the backup CSV.
+
+**`htmltab` returns a table but the columns look wrong** — the table may have a two-row header. Try `htmltab(doc = films_url, which = "...", header = 1)`. Or use the backup CSV; the structure of this activity doesn't depend on live data.
+
+**HTTP error 403 / 429** — Wikipedia is rate-limiting the room's shared Wi-Fi. Use the backup CSV.
+
+**`parse_number()` error "is.character(x) is not TRUE"** — you passed it a column that's already numeric (this happens with the backup CSV for `Year`). Use `as.numeric()` for those; keep `parse_number()` for the dollar column.
+
+**Dagger (†) didn't match** — your file encoding may have mangled it. Run `grepl("†", Title)` instead, which is the same character written as a Unicode code.
+
+**AI code uses `%>%` or `library(tidyverse)`** — it ignored your constraints. Paste back: "Please follow the constraints: native pipe, individual packages." If it keeps ignoring them, that itself is useful information about the tool.
+
+## Exit task (5 minutes, essential)
+
+On an index card or in a shared doc, write:
+
+1. **A question** you could answer with data you can get (any data, not today's).
+2. **Its ETV steps:** where would you *Extract* the data from and with what function? What *Transform* steps (one or two dplyr verbs) would you need? What *Visualization* would show the answer?
+3. **One AI check:** describe, in one sentence, how you confirmed that one AI-generated transformation today was (or wasn't) correct. Name the specific thing you compared.
+
+Hand it in on your way out. Take candy.
+
+---
+
+::: {.callout-note collapse="true"}
+## What was verified and what wasn't
+- **Verified on 2026-10-28:** the Wikipedia URL, the position of the table as the first `wikitable` on the page, its displayed column names, and all 50 rows (saved to the backup CSV). The htmltab install command and CRAN archival date (2022-11-11) were checked against the GitHub README and CRAN.
+- **Not tested:** the R code was not executed when these materials were generated (no R available in the build environment). The exact column names htmltab returns, in particular whether the `Ref` column survives, should be confirmed live with `names(top_films)`; the `select()` line is written to work either way. Checkpoint numbers were computed from the backup CSV with a separate tool.
+:::

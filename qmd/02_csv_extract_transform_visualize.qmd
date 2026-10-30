@@ -1,0 +1,296 @@
+---
+title: "02 · Café Orders: Extract → Transform → Visualize"
+subtitle: "ETV Workshop · a complete guided activity (25 minutes)"
+author: "Dr. Immanuel Williams"
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    code-copy: true
+    theme: flatly
+execute:
+  eval: false
+---
+
+## The question
+
+A campus café wants to know where its money comes from.
+
+> **Which drink category brings in the most revenue, and is that because it sells *more* drinks or *pricier* drinks?**
+
+Everything in this file serves that one question. Before touching any code, write down your prediction:
+
+::: {.callout-tip}
+## Predict first
+Three categories: **Coffee**, **Tea**, **Specialty** (mochas, frappes, hot chocolate). Which one do you think brings in the most total money? Which one do you think has the highest revenue *per order*? Write both guesses on paper. Candy for the closest.
+:::
+
+## The data
+
+**File:** `data/cafe_orders.csv` · 506 rows · 10 columns
+
+::: {.callout-warning}
+## Synthetic data
+This dataset is **simulated** for teaching. It was generated with a random-number seed to look like four weeks of orders (Sept 21 – Oct 18, 2026) at a fictional campus café. No real business is represented. The quirks are deliberate.
+:::
+
+| Column | Type (as stored) | Meaning |
+|---|---|---|
+| `order_id` | number | Unique order number |
+| `date` | date (`YYYY-MM-DD`) | Day of the order |
+| `day_of_week` | text | Monday … Sunday |
+| `hour` | number | Hour of day, 24-hour clock (7 = 7 am, 13 = 1 pm) |
+| `drink` | text | Specific drink name |
+| `category` | text | `Coffee`, `Tea`, or `Specialty` |
+| `size` | text | `Small`, `Medium`, `Large` |
+| `price` | **text** | Price of one drink, stored like `"$4.75"` |
+| `quantity` | number | How many of that drink in the order |
+| `loyalty_member` | text | `yes` / `no` |
+
+Notice the `price` column. It has a dollar sign, so R will read it as **text**, not as a number. You can't add up text. Fixing that is our cleaning task.
+
+## Set up your script
+
+Create a new R file in your `etv-workshop` folder, save it as `cafe_etv.R`, and start with the packages:
+
+```r
+library(readr)    # Extract: read CSV files
+library(dplyr)    # Transform: filter, mutate, group, summarise
+library(ggplot2)  # Visualize: make plots
+```
+
+Run those three lines (**Ctrl/Cmd+Enter** on each, or highlight all and run). Then confirm R can see the data folder:
+
+```r
+getwd()                    # should end in "etv-workshop"
+file.exists("data/cafe_orders.csv")   # should print TRUE
+```
+
+If that prints `FALSE`, stop and fix it (see Troubleshooting in file 01). Nothing else works until this is `TRUE`.
+
+## EXTRACT — bring the data in
+
+`read_csv()` from **readr** reads the file and gives it a name in R. We'll call it `cafe`.
+
+```r
+cafe <- read_csv("data/cafe_orders.csv")
+```
+
+**Checkpoint:** the Console prints a summary like:
+
+```
+Rows: 506 Columns: 10
+── Column specification ──────────────────
+Delimiter: ","
+chr  (6): day_of_week, drink, category, size, price, loyalty_member
+dbl  (3): order_id, hour, quantity
+date (1): date
+```
+
+Three things to notice:
+
+1. `chr` means character (text), `dbl` means double (a number with decimals), `date` means readr recognized the date format.
+2. `price` is listed under `chr`. That's our problem.
+3. `cafe` now appears in the **Variables** pane. Click the table icon to open it in the **Data Explorer** and scroll around. Get a feel for it.
+
+Two quick ways to look at the data in code:
+
+```r
+glimpse(cafe)   # one line per column: name, type, first few values
+head(cafe)      # first 6 rows
+```
+
+`glimpse()` is from dplyr and is the fastest way to answer "what did I just load?"
+
+## TRANSFORM — step 1: pick the columns that matter
+
+Our question needs `category`, `price`, and `quantity`. We'll keep `drink` too, for context. `select()` chooses columns:
+
+```r
+cafe |>
+  select(drink, category, price, quantity)
+```
+
+Run it. The Console shows a 506 × 4 table. We didn't save this anywhere (no `<-`), so `cafe` is unchanged. That's a good habit: **look first, save later.**
+
+## TRANSFORM — step 2: the cleaning task
+
+We need to turn `"$4.75"` into `4.75`. readr has a function built for exactly this: `parse_number()` strips out everything that isn't part of a number and returns the number.
+
+```r
+parse_number("$4.75")       # try it: returns 4.75
+parse_number("$1,234.50")   # also handles commas: 1234.5
+```
+
+**The decision:** we could instead edit the CSV by hand and delete the dollar signs. We don't, for two reasons. First, 506 rows is tedious and 50,000 would be impossible. Second, and more important, if the café sends us next month's file, our script fixes it automatically. *Clean in code, not in the file.*
+
+`mutate()` from dplyr creates new columns (or overwrites existing ones). We'll make `price_num` and, while we're there, `revenue` for each order:
+
+```r
+cafe_clean <- cafe |>
+  mutate(
+    price_num = parse_number(price),
+    revenue   = price_num * quantity
+  )
+```
+
+This time we saved the result as `cafe_clean` because we'll build on it.
+
+**Checkpoint:** verify it worked.
+
+```r
+glimpse(cafe_clean)
+```
+
+You should now see 12 columns: `price_num` as `dbl` and `revenue` as `dbl`. Check a few values make sense:
+
+```r
+cafe_clean |>
+  select(price, price_num, quantity, revenue) |>
+  head()
+```
+
+A `$5.75` drink with quantity 1 should show revenue 5.75. A `$5.00` drink with quantity 2 should show 10.00. If `price_num` is full of `NA`, something went wrong; ask for help.
+
+One more sanity check, because it catches typos in the data that would otherwise silently poison every result:
+
+```r
+summary(cafe_clean$price_num)
+```
+
+Minimum should be 2.50, maximum 7.00, no `NA`s. A minimum of 0 or a maximum of 475 would mean a price was mistyped in the source.
+
+## TRANSFORM — step 3: group and summarise
+
+Now the heart of the question. `group_by()` splits the data into one group per category; `summarise()` collapses each group into one row of totals.
+
+```r
+cafe_summary <- cafe_clean |>
+  group_by(category) |>
+  summarise(
+    orders        = n(),
+    total_revenue = sum(revenue),
+    avg_revenue   = mean(revenue)
+  )
+
+cafe_summary
+```
+
+**Checkpoint:** three rows.
+
+```
+  category  orders total_revenue avg_revenue
+  <chr>      <int>         <dbl>       <dbl>
+1 Coffee       276         1612         5.84
+2 Specialty    126          919.        7.29
+3 Tea          104          562.        5.40
+```
+
+(Your digits may display with slightly different rounding; the values are the same.)
+
+Stop and read the table. Compare it to your prediction. Coffee makes the most **total** money. But Specialty makes the most **per order**, by a lot. That's already most of the answer.
+
+::: {.callout-note}
+## Why `n()`?
+`n()` counts the rows in each group. It takes no arguments. It only works inside `summarise()` or `mutate()` after a `group_by()`.
+:::
+
+## VISUALIZE — draw the answer
+
+A plot should make the answer visible in two seconds. For "which category makes the most?" a bar chart is right.
+
+`ggplot2` builds plots in layers. First you say what data and which columns map to which axes (`aes`thetics). Then you add a layer that says how to draw them (`geom_col` for bars whose heights are already computed).
+
+```r
+ggplot(cafe_summary, aes(x = category, y = total_revenue)) +
+  geom_col(fill = "#2a6f4e") +
+  labs(
+    title    = "Coffee brings in the most total revenue",
+    subtitle = "Four weeks of simulated café orders, Sept 21 – Oct 18, 2026",
+    x        = NULL,
+    y        = "Total revenue (USD)",
+    caption  = "Synthetic data for the ETV Workshop"
+  ) +
+  theme_minimal()
+```
+
+Notice the title is the **answer**, not a description like "Revenue by Category." Make every plot title state what the viewer should take away.
+
+**Checkpoint:** the Plots pane shows three bars; Coffee is clearly tallest (around 1,600), Specialty in the middle (around 900), Tea shortest (around 560).
+
+::: {.callout-note}
+## Why `+` and not `|>`?
+ggplot2 was written before the pipe existed, and it stacks *layers* onto a plot rather than passing data through steps. So inside a ggplot you use `+`. Everywhere else today, use `|>`. If you mix them up, ggplot gives a helpful error telling you so.
+:::
+
+### Second chart, same two lines changed
+
+The question also asked *why*. Swap the y-axis to `avg_revenue` and the story flips:
+
+```r
+ggplot(cafe_summary, aes(x = category, y = avg_revenue)) +
+  geom_col(fill = "#b5562a") +
+  labs(
+    title = "…but Specialty drinks make the most per order",
+    x     = NULL,
+    y     = "Average revenue per order (USD)"
+  ) +
+  theme_minimal()
+```
+
+## Change something and try again
+
+Pick **one** of these and run it. Predict the result before you run it. Then check the Data Explorer or the printed table to see if you were right.
+
+**A. Swap the grouping variable.** Change `group_by(category)` to `group_by(size)`. Which size brings in the most money? (Does the answer surprise you given that Large costs the most?)
+
+**B. Add a filter.** Insert `filter(hour < 12) |>` right after `cafe_clean |>` so you only look at morning orders. Does Coffee's lead grow or shrink in the morning?
+
+**C. Two grouping variables.** Change to `group_by(category, loyalty_member)`. Do loyalty members spend more per order in every category, or just some?
+
+```r
+# Template: copy, then change ONE thing
+cafe_clean |>
+  # filter(hour < 12) |>              # <- option B: uncomment
+  group_by(category) |>               # <- option A or C: change this
+  summarise(
+    orders        = n(),
+    total_revenue = sum(revenue),
+    avg_revenue   = mean(revenue)
+  )
+```
+
+Every one of these is the same ETV recipe with one ingredient changed. That's the skill: not memorizing functions, but knowing which step of the recipe your question lives in.
+
+## Interpretation — answering the question in plain language
+
+> Coffee brings in the most total revenue, about $1,612 over four weeks, roughly $700 more than Specialty and nearly three times Tea. But that lead comes from **volume**, not price: Coffee accounts for 276 of the 506 orders (55%). Per order, Specialty drinks earn the most, about $7.29 versus $5.84 for Coffee and $5.40 for Tea. So the honest answer to the café is: coffee pays the bills because people buy a lot of it, while specialty drinks are the most valuable *individual* sale. If the café wants to raise revenue without raising prices, nudging coffee customers toward a specialty drink is the lever these data point to.
+
+Notice how the interpretation mentions actual numbers, says what the data *can* and *can't* tell us, and ends with what someone could do about it. That's the finish line for every ETV cycle.
+
+## Optional extensions (skip if short on time)
+
+**Daily revenue over time.** Group by `date` instead, then plot with `geom_line()` and `aes(x = date, y = total_revenue)`. Weekends should be visibly lower.
+
+**Top drinks.** `group_by(drink)` then `arrange(desc(total_revenue))` then `head(5)`. `arrange()` sorts; `desc()` reverses the order.
+
+**A reusable recipe.** Put your whole pipeline (read → mutate → group → summarise → plot) into one script and run it top to bottom with the ▶ button. If it runs clean from an empty session, you've written a real, reproducible analysis.
+
+## Troubleshooting
+
+**`Error: object 'cafe' not found`** — you skipped the `read_csv()` line or it failed. Scroll up in the Console for the real error.
+
+**`could not find function "read_csv"`** — you didn't run `library(readr)`. Loading packages is per session; if you restarted R, run the three `library()` lines again.
+
+**`price_num` is all `NA`** — most likely you wrote `parse_number(price_num)` instead of `parse_number(price)`, or the CSV was edited in Excel and saved with a different encoding. Re-download the CSV.
+
+**The plot pane is blank / the plot is tiny** — drag the pane divider to make the Plots pane bigger, or click the "open in new window" icon.
+
+**`Error in ggplot(...) : could not find function "ggplot"`** — run `library(ggplot2)`.
+
+---
+
+::: {.callout-note collapse="true"}
+## Not tested in this build
+The R code in this file follows current readr/dplyr/ggplot2 documentation and the expected outputs were computed from the CSV with a separate tool, but the R code itself was **not executed** when these materials were generated. If an output differs slightly in formatting (column widths, rounding), that's expected. If a function errors, check the package version with `packageVersion("dplyr")` (should be 1.1 or newer).
+:::

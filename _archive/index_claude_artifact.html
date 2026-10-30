@@ -1,0 +1,566 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>ETV Workshop</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  /* Layout: a run-of-show. A left time rail anchors the three sessions; the ETV pipeline is the only loud moment. */
+  :root {
+    --bg: #f2f5f3;
+    --surface: #ffffff;
+    --surface-2: #e7edea;
+    --fg: #14201b;
+    --muted: #5b6b64;
+    --line: #cfd9d4;
+    --extract: #1f7a5c;
+    --transform: #b8691f;
+    --visualize: #3b4f8c;
+    --accent: #1f7a5c;
+    --accent-ink: #ffffff;
+    --candy: #c7375a;
+    --code-bg: #0f1a16;
+    --code-fg: #d8e4de;
+    --display: "Bricolage Grotesque", "Avenir Next", "Helvetica Neue", Arial, sans-serif;
+    --body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono: "IBM Plex Mono", "SFMono-Regular", Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1613; --surface: #161f1b; --surface-2: #1e2a25; --fg: #e4ebe7; --muted: #99a9a1; --line: #2c3a34;
+      --extract: #4fb48e; --transform: #e2954a; --visualize: #8ea0dc; --accent: #4fb48e; --accent-ink: #0f1613;
+      --candy: #ef6f8c; --code-bg: #0a100e; --code-fg: #d3dfd9; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1613; --surface: #161f1b; --surface-2: #1e2a25; --fg: #e4ebe7; --muted: #99a9a1; --line: #2c3a34;
+    --extract: #4fb48e; --transform: #e2954a; --visualize: #8ea0dc; --accent: #4fb48e; --accent-ink: #0f1613;
+    --candy: #ef6f8c; --code-bg: #0a100e; --code-fg: #d3dfd9; color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--fg); font-family: var(--body); font-size: 16px; line-height: 1.55; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; line-height: 1.1; }
+  h2 { font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 700; }
+  h3 { font-size: 1.15rem; font-weight: 700; }
+  p { margin: 0; }
+  a { color: var(--accent); }
+  code, kbd, .mono { font-family: var(--mono); font-size: 0.92em; }
+  .eyebrow { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+  button { font: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* Header */
+  header { border-bottom: 1px solid var(--line); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-block: 14px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 12px; font-family: var(--display); font-weight: 800; font-size: 1.1rem; letter-spacing: -0.01em; }
+  .brand .mark { display: inline-grid; grid-auto-flow: column; gap: 3px; }
+  .brand .mark i { width: 9px; height: 18px; border-radius: 2px; display: block; }
+  .brand .mark i:nth-child(1) { background: var(--extract); }
+  .brand .mark i:nth-child(2) { background: var(--transform); }
+  .brand .mark i:nth-child(3) { background: var(--visualize); }
+  .meta { display: flex; gap: 18px; flex-wrap: wrap; color: var(--muted); font-size: 0.9rem; }
+
+  /* Hero */
+  .hero { padding-block: 56px 40px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; align-items: end; }
+  .hero h1 { font-size: clamp(2.4rem, 6vw, 4.4rem); font-weight: 800; letter-spacing: -0.03em; line-height: 0.98; }
+  .hero h1 .e { color: var(--extract); } .hero h1 .t { color: var(--transform); } .hero h1 .v { color: var(--visualize); }
+  .hero .lede { margin-top: 20px; font-size: 1.1rem; max-width: 36rem; color: var(--fg); }
+  .hero .lede b { font-weight: 600; }
+  .hero-side { display: grid; gap: 14px; }
+  .reassure { font-family: var(--display); font-size: 1.35rem; font-weight: 700; line-height: 1.2; border-left: 4px solid var(--candy); padding-left: 14px; }
+  .reassure small { display: block; font-family: var(--body); font-weight: 500; font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
+  .zipcard { background: var(--fg); color: var(--bg); padding: 20px; display: grid; gap: 12px; border-radius: 6px; }
+  .zipcard .eyebrow { color: color-mix(in srgb, var(--bg) 70%, transparent); }
+  .zipcard h3 { color: inherit; font-size: 1.3rem; }
+  .zipcard .tree { color: color-mix(in srgb, var(--bg) 85%, transparent); font-size: 0.82rem; line-height: 1.5; white-space: pre; overflow-x: auto; }
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; font-weight: 600; font-size: 0.95rem; text-decoration: none; background: var(--accent); color: var(--accent-ink); }
+  .btn:hover { filter: brightness(1.07); }
+  .btn.ghost { background: transparent; color: inherit; border-color: currentColor; opacity: 0.9; }
+  .btn.sm { padding: 7px 12px; font-size: 0.86rem; }
+  .btn[disabled] { opacity: 0.5; cursor: default; }
+  .btn svg { width: 16px; height: 16px; flex: none; }
+  .zipcard .btn { background: var(--bg); color: var(--fg); justify-self: start; }
+
+  /* Pipeline */
+  .pipe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 8px; }
+  .pipe .step { background: var(--surface); padding: 20px 20px 22px; border-top: 5px solid var(--c); display: grid; gap: 8px; min-width: 0; }
+  .pipe .step:first-child { border-radius: 6px 0 0 6px; } .pipe .step:last-child { border-radius: 0 6px 6px 0; }
+  .pipe .step .eyebrow { color: var(--c); }
+  .pipe .step h3 { font-size: 1.45rem; }
+  .pipe .step p { color: var(--muted); font-size: 0.93rem; }
+  .pipe .step code { display: block; color: var(--fg); font-size: 0.85rem; margin-top: 4px; white-space: pre-wrap; }
+
+  /* Sections */
+  section { padding-block: 44px; border-top: 1px solid var(--line); }
+  .sechead { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 24px; }
+  .sechead p { color: var(--muted); max-width: 40rem; }
+
+  /* Run of show */
+  .show { display: grid; gap: 2px; }
+  .sess { display: grid; grid-template-columns: 110px 1fr; gap: 0 24px; background: var(--surface); padding: 22px 22px 22px 0; }
+  .sess:first-child { border-radius: 6px 6px 0 0; } .sess:last-child { border-radius: 0 0 6px 6px; }
+  .sess .time { font-family: var(--mono); font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.9rem; border-right: 3px solid var(--c); padding-left: 22px; padding-top: 4px; }
+  .sess .time b { display: block; color: var(--fg); font-size: 1.05rem; font-weight: 500; }
+  .sess .body { display: grid; gap: 12px; min-width: 0; }
+  .sess h3 { font-size: 1.35rem; }
+  .sess h3 .num { color: var(--c); margin-right: 6px; }
+  .sess .desc { color: var(--muted); max-width: 42rem; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tag { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.04em; padding: 3px 8px; border-radius: 3px; background: var(--surface-2); color: var(--fg); }
+  .tag.ess { background: color-mix(in srgb, var(--c) 18%, transparent); color: var(--c); }
+  .sess ul { margin: 0; padding-left: 18px; color: var(--fg); font-size: 0.95rem; display: grid; gap: 3px; }
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 4px; }
+  .file { font-family: var(--mono); font-size: 0.82rem; color: var(--muted); }
+
+  /* Data cards */
+  .data { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .dcard { background: var(--surface); border-radius: 6px; padding: 20px; display: grid; gap: 12px; min-width: 0; }
+  .dcard .top { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
+  .dcard h3 { font-size: 1.2rem; }
+  .dcard .note { color: var(--muted); font-size: 0.93rem; }
+  .dcard .warn { font-size: 0.82rem; font-weight: 600; color: var(--transform); }
+  .tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 0.82rem; font-family: var(--mono); font-variant-numeric: tabular-nums; }
+  th, td { text-align: left; padding: 6px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  th { background: var(--surface-2); font-weight: 500; }
+  tr:last-child td { border-bottom: 0; }
+  .cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 4px 10px; font-size: 0.82rem; }
+  .cols span { font-family: var(--mono); color: var(--muted); }
+  .cols span.hot { color: var(--transform); font-weight: 500; }
+
+  /* Checklist */
+  .check { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .ccard { background: var(--surface); border-radius: 6px; padding: 20px; display: grid; gap: 12px; }
+  .ccard ol, .ccard ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 0.95rem; }
+  .ccard li code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  pre.code { background: var(--code-bg); color: var(--code-fg); padding: 14px 16px; border-radius: 4px; overflow-x: auto; font-family: var(--mono); font-size: 0.84rem; line-height: 1.5; margin: 0; }
+  pre.code .cm { color: #7fa895; }
+  .candy { display: flex; gap: 10px; align-items: center; color: var(--candy); font-weight: 600; }
+
+  /* Troubleshooting */
+  .trouble { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 2px; }
+  .trouble div { background: var(--surface); padding: 16px 18px; display: grid; gap: 6px; font-size: 0.92rem; }
+  .trouble b { font-family: var(--mono); font-weight: 500; font-size: 0.85rem; color: var(--transform); }
+  .trouble p { color: var(--muted); }
+
+  footer { padding-block: 32px 48px; color: var(--muted); font-size: 0.88rem; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+
+  /* Reader overlay */
+  .reader { position: fixed; inset: 0; background: var(--bg); z-index: 50; overflow: auto; }
+  .reader .bar { position: sticky; top: env(safe-area-inset-top, 0px); background: var(--surface); border-bottom: 1px solid var(--line); z-index: 2; }
+  .reader .bar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-block: 10px; }
+  .reader .bar .title { font-family: var(--display); font-weight: 700; display: flex; align-items: center; gap: 10px; min-width: 0; }
+  .reader .bar .title span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .reader .bar .title i { width: 10px; height: 22px; border-radius: 2px; background: var(--c); flex: none; }
+  .article { max-width: 760px; margin: 0 auto; padding-block: 32px 80px; }
+  .article h1 { font-size: clamp(1.8rem, 4vw, 2.6rem); font-weight: 800; letter-spacing: -0.02em; margin-bottom: 6px; }
+  .article .sub { color: var(--muted); margin-bottom: 28px; }
+  .article h2 { font-size: 1.5rem; margin: 40px 0 12px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .article h3 { font-size: 1.15rem; margin: 26px 0 8px; }
+  .article p { margin: 0 0 14px; }
+  .article ul, .article ol { margin: 0 0 14px; padding-left: 22px; }
+  .article li { margin-bottom: 4px; }
+  .article blockquote { margin: 0 0 16px; padding: 10px 16px; border-left: 4px solid var(--c); background: var(--surface); font-size: 1.05rem; }
+  .article blockquote p { margin: 0; }
+  .article pre { background: var(--code-bg); color: var(--code-fg); padding: 14px 16px; border-radius: 4px; overflow-x: auto; font-size: 0.86rem; line-height: 1.5; margin: 0 0 16px; position: relative; }
+  .article pre code { font-size: inherit; background: none; color: inherit; }
+  .article :not(pre) > code { background: var(--surface-2); padding: 1px 5px; border-radius: 3px; }
+  .article .copy { position: absolute; top: 8px; right: 8px; background: var(--surface-2); color: var(--fg); border: 0; border-radius: 3px; padding: 3px 8px; font-size: 0.75rem; cursor: pointer; opacity: 0.85; }
+  .article .tbl { margin: 0 0 16px; }
+  .article table { font-family: var(--body); font-size: 0.9rem; }
+  .article th, .article td { white-space: normal; }
+  .callout { border: 1px solid var(--line); border-left: 4px solid var(--cc, var(--accent)); border-radius: 4px; padding: 14px 16px 4px; margin: 0 0 16px; background: var(--surface); }
+  .callout .ctitle { font-weight: 700; margin-bottom: 8px; font-family: var(--display); color: var(--cc, var(--accent)); }
+  .callout.note { --cc: var(--visualize); } .callout.tip { --cc: var(--extract); } .callout.important, .callout.warning { --cc: var(--transform); }
+  .callout details summary { cursor: pointer; font-weight: 700; font-family: var(--display); color: var(--cc, var(--accent)); margin-bottom: 8px; }
+  .article hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+  .toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--fg); color: var(--bg); padding: 10px 16px; border-radius: 4px; font-size: 0.9rem; z-index: 60; box-shadow: 0 6px 24px rgba(0,0,0,0.2); max-width: calc(100vw - 32px); }
+  .unavail { font-size: 0.82rem; color: var(--muted); }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; gap: 28px; padding-block: 36px 28px; }
+    .pipe { grid-template-columns: 1fr; }
+    .pipe .step:first-child, .pipe .step:last-child { border-radius: 6px; }
+    .sess { grid-template-columns: 1fr; padding: 18px 16px; gap: 10px; }
+    .sess .time { border-right: 0; border-left: 3px solid var(--c); padding-left: 10px; display: flex; gap: 10px; align-items: baseline; }
+    .data, .check { grid-template-columns: 1fr; }
+  }
+  @media (prefers-reduced-motion: no-preference) { .btn { transition: filter 0.15s; } }
+</style>
+
+<header>
+  <div class="wrap">
+    <div class="brand"><span class="mark"><i></i><i></i><i></i></span> ETV Workshop</div>
+    <div class="meta"><span>Positron + R</span><span>60 minutes · hands-on</span><span>Dr. Immanuel Williams</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="hero">
+    <div>
+      <h1><span class="e">Extract</span> → <span class="t">Transform</span> → <span class="v">Visualize</span></h1>
+      <p class="lede">A beginner's hour in Positron and R. You'll bring data in, reshape it to answer <b>one real question</b>, draw the answer, and then use an AI assistant to run the next cycle faster without giving up the checks. Three files, two datasets, one framework.</p>
+    </div>
+    <div class="hero-side">
+      <div class="reassure">"It's going to be a lot, but we got this."<small>Opening line. Candy is involved.</small></div>
+      <div class="zipcard">
+        <span class="eyebrow">Everything in one download</span>
+        <h3>etv-workshop.zip</h3>
+        <div class="tree">etv-workshop/
+├── README.md
+├── qmd/
+│   ├── 01_start_here_positron_and_r.qmd
+│   ├── 02_csv_extract_transform_visualize.qmd
+│   └── 03_wikipedia_and_ai_etv_flows.qmd
+└── data/
+    ├── cafe_orders.csv
+    └── top_films_backup.csv</div>
+        <button class="btn" data-dl="zip" data-name="etv-workshop.zip" id="dl-zip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          Download the folder (.zip, about 25 KB)
+        </button>
+        <span class="unavail" id="dl-note" hidden>Downloads need the claude.ai viewer. Open this page in claude.ai, or use Read online + Copy source below.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="pipe">
+    <div class="step" style="--c: var(--extract)">
+      <span class="eyebrow">Extract</span>
+      <h3>Bring the data in</h3>
+      <p>From a CSV file or straight out of a Wikipedia table. One package each.</p>
+      <code>readr::read_csv()
+htmltab::htmltab()</code>
+    </div>
+    <div class="step" style="--c: var(--transform)">
+      <span class="eyebrow">Transform</span>
+      <h3>Reshape it to the question</h3>
+      <p>Keep what matters, fix what's broken, group and summarise. Always with <code style="display:inline">|&gt;</code>.</p>
+      <code>select() · filter() · mutate()
+group_by() · summarise()</code>
+    </div>
+    <div class="step" style="--c: var(--visualize)">
+      <span class="eyebrow">Visualize</span>
+      <h3>Draw the answer</h3>
+      <p>One clearly labeled chart whose title states the finding, not the variables.</p>
+      <code>ggplot() + geom_col()
++ labs(title = "the answer")</code>
+    </div>
+  </div>
+
+  <section id="agenda">
+    <div class="sechead">
+      <h2>Run of show</h2>
+      <p>Three files, in order. Essential parts fit the hour; optional extensions are marked inside each file and can go home with you.</p>
+    </div>
+    <div class="show">
+      <article class="sess" style="--c: var(--extract)">
+        <div class="time"><b>0:00</b>10 min</div>
+        <div class="body">
+          <h3><span class="num">01</span>Start here: Positron and R</h3>
+          <p class="desc">How R, Positron, and packages relate. Install vs. load. A five-minute tour: scripts, running code, the Console, the Data Explorer, the Plots pane. Includes the pre-workshop checklist and why <code>htmltab</code> installs from GitHub, not CRAN.</p>
+          <div class="tags"><span class="tag ess">Essential</span><span class="tag">Pre-workshop checklist inside</span><span class="tag">Instructor checklist</span></div>
+          <span class="file">qmd/01_start_here_positron_and_r.qmd · 11 KB</span>
+          <div class="actions">
+            <button class="btn sm" data-read="01">Read online</button>
+            <button class="btn sm ghost" data-copy="qmd/01_start_here_positron_and_r.qmd">Copy source</button>
+          </div>
+        </div>
+      </article>
+      <article class="sess" style="--c: var(--transform)">
+        <div class="time"><b>0:10</b>25 min</div>
+        <div class="body">
+          <h3><span class="num">02</span>Café orders: a complete ETV cycle</h3>
+          <p class="desc">One question: <em>which drink category makes the most money, and is it volume or price?</em> Extract with <code>read_csv()</code>, fix a price column stored as text with <code>parse_number()</code>, group and summarise, draw two bar charts, interpret in plain language. Prediction question and a change-one-thing exercise.</p>
+          <div class="tags"><span class="tag ess">Essential</span><span class="tag">Synthetic data</span><span class="tag">3 optional extensions</span></div>
+          <span class="file">qmd/02_csv_extract_transform_visualize.qmd · 12 KB</span>
+          <div class="actions">
+            <button class="btn sm" data-read="02">Read online</button>
+            <button class="btn sm ghost" data-copy="qmd/02_csv_extract_transform_visualize.qmd">Copy source</button>
+          </div>
+        </div>
+      </article>
+      <article class="sess" style="--c: var(--visualize)">
+        <div class="time"><b>0:35</b>25 min</div>
+        <div class="body">
+          <h3><span class="num">03</span>Wikipedia tables and AI-assisted flows</h3>
+          <p class="desc">Pull the top-50 highest-grossing films table out of Wikipedia with <code>htmltab()</code>, clean dollar strings and footnote daggers, count films per decade. Then the AI loop: question → plan → code → checks → chart → interpretation, with a copy-ready prompt template, a plausible AI answer that contains one real mistake, and the exit task.</p>
+          <div class="tags"><span class="tag ess">Essential</span><span class="tag">Backup CSV included</span><span class="tag">Exit task</span></div>
+          <span class="file">qmd/03_wikipedia_and_ai_etv_flows.qmd · 17 KB</span>
+          <div class="actions">
+            <button class="btn sm" data-read="03">Read online</button>
+            <button class="btn sm ghost" data-copy="qmd/03_wikipedia_and_ai_etv_flows.qmd">Copy source</button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section id="data">
+    <div class="sechead">
+      <h2>Data</h2>
+      <p>Both files are inside the zip. Download them separately here if you only need one.</p>
+    </div>
+    <div class="data">
+      <div class="dcard">
+        <div class="top">
+          <div><span class="eyebrow">Used in 02</span><h3>cafe_orders.csv</h3></div>
+          <button class="btn sm" data-dl="data/cafe_orders.csv" data-name="cafe_orders.csv">Download · 31 KB</button>
+        </div>
+        <p class="warn">Synthetic. Simulated four weeks of orders at a fictional campus café (Sept 21 – Oct 18, 2026). No real business.</p>
+        <p class="note">506 rows · 10 columns. The <code>price</code> column is stored as text with a dollar sign on purpose; parsing it is the cleaning task.</p>
+        <div class="tbl"><table>
+          <thead><tr><th>order_id</th><th>date</th><th>day_of_week</th><th>hour</th><th>drink</th><th>category</th><th>size</th><th>price</th><th>quantity</th><th>loyalty_member</th></tr></thead>
+          <tbody>
+            <tr><td>1001</td><td>2026-09-21</td><td>Monday</td><td>9</td><td>Caramel Macchiato</td><td>Specialty</td><td>Small</td><td>$5.75</td><td>1</td><td>yes</td></tr>
+            <tr><td>1002</td><td>2026-09-21</td><td>Monday</td><td>8</td><td>Green Tea</td><td>Tea</td><td>Small</td><td>$2.75</td><td>1</td><td>no</td></tr>
+            <tr><td>1003</td><td>2026-09-21</td><td>Monday</td><td>9</td><td>Caramel Macchiato</td><td>Specialty</td><td>Medium</td><td>$6.25</td><td>1</td><td>yes</td></tr>
+            <tr><td>1004</td><td>2026-09-21</td><td>Monday</td><td>13</td><td>Chai Latte</td><td>Tea</td><td>Medium</td><td>$5.00</td><td>1</td><td>yes</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="dcard">
+        <div class="top">
+          <div><span class="eyebrow">Fallback for 03</span><h3>top_films_backup.csv</h3></div>
+          <button class="btn sm" data-dl="data/top_films_backup.csv" data-name="top_films_backup.csv">Download · 2 KB</button>
+        </div>
+        <p class="note">The first table on Wikipedia's <a href="https://en.wikipedia.org/wiki/List_of_highest-grossing_films" target="_blank" rel="noopener">List of highest-grossing films</a>, saved 2026-10-28 with its column names unchanged so the same cleaning code works on the live extract and on this file. 50 rows · 5 columns. Daggers (†) mark films still in theaters.</p>
+        <p class="note">Source: Wikipedia contributors, CC BY-SA 4.0. The live table changes as films are released; this snapshot won't.</p>
+        <div class="tbl"><table>
+          <thead><tr><th>Rank</th><th>Peak</th><th>Title</th><th>Worldwide gross</th><th>Year</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>Avengers: Endgame †</td><td>$2,937,323,455</td><td>2019</td></tr>
+            <tr><td>2</td><td>1</td><td>Avatar</td><td>$2,923,710,708</td><td>2009</td></tr>
+            <tr><td>3</td><td>3</td><td>Spider-Man: Brand New Day †</td><td>$2,512,865,567</td><td>2026</td></tr>
+            <tr><td>4</td><td>3</td><td>Avatar: The Way of Water</td><td>$2,334,484,620</td><td>2022</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="setup">
+    <div class="sechead">
+      <h2>Before you arrive</h2>
+      <p>Installs take 10–15 minutes and eat the hour if done live. Please finish these first. Full details are in file 01.</p>
+    </div>
+    <div class="check">
+      <div class="ccard">
+        <span class="eyebrow">Pre-workshop checklist</span>
+        <ol>
+          <li>Install <b>R 4.2 or newer</b> from <a href="https://cloud.r-project.org/" target="_blank" rel="noopener">cloud.r-project.org</a> (or with <a href="https://github.com/r-lib/rig" target="_blank" rel="noopener">rig</a>). Positron does not include R.</li>
+          <li>Install <b>Positron</b> from <a href="https://positron.posit.co/download.html" target="_blank" rel="noopener">positron.posit.co</a>.</li>
+          <li>Open Positron once and confirm the interpreter selector (top-right) shows <b>R 4.x</b>.</li>
+          <li>Run the package installs on the right in the Console. Say yes to prompts.</li>
+          <li>Download the zip above, unzip it, and in Positron use <b>File → Open Folder…</b> on the <code>etv-workshop</code> folder.</li>
+        </ol>
+        <p class="candy"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 9a4 4 0 1 1 8 6 4 4 0 0 1-8-6Z"/><path d="m4 6 3 3M20 18l-3-3M4 18l3-3M20 6l-3 3"/></svg>Candy for the first correct prediction, the first fixed error, and the first plot.</p>
+      </div>
+      <div class="ccard">
+        <span class="eyebrow">Package installs (once per computer)</span>
+<pre class="code"><span class="cm"># From CRAN</span>
+install.packages(c("readr", "dplyr", "ggplot2", "remotes"))
+
+<span class="cm"># htmltab was removed from CRAN on 2022-11-11,</span>
+<span class="cm"># so it installs from the maintained GitHub fork:</span>
+remotes::install_github("htmltab/htmltab")
+
+<span class="cm"># Checkpoint: four TRUEs</span>
+c("readr", "dplyr", "ggplot2", "htmltab") %in%
+  rownames(installed.packages())</pre>
+        <p class="unavail">Install once; load with <code>library()</code> at the top of every script. Verified against the htmltab GitHub README and CRAN on 2026-10-28.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="trouble">
+    <div class="sechead">
+      <h2>If something breaks</h2>
+      <p>The three failures that eat workshop time. Each file has a longer troubleshooting list.</p>
+    </div>
+    <div class="trouble">
+      <div><b>cannot open file 'data/cafe_orders.csv'</b><p>Wrong working directory. Run <code>getwd()</code>; it should end in <code>etv-workshop</code>. Use File → Open Folder… on that folder, then restart R.</p></div>
+      <div><b>package 'htmltab' is not available</b><p>Expected: it isn't on CRAN. Use <code>remotes::install_github("htmltab/htmltab")</code>. If GitHub rate-limits the room, skip it and use <code>top_films_backup.csv</code>.</p></div>
+      <div><b>could not find function "read_csv"</b><p>The package is installed but not loaded this session. Run <code>library(readr)</code>. Same fix for dplyr and ggplot2 functions.</p></div>
+      <div><b>htmltab: table not found / columns look wrong</b><p>Wikipedia changed the page. Try <code>which = 1</code>, or read the backup CSV; the column names match, so the rest of the code runs unchanged.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">
+  <span>ETV Workshop materials by Dr. Immanuel Williams. Café data is synthetic. Film table from Wikipedia contributors (CC BY-SA 4.0), retrieved 2026-10-28.</span>
+  <span>R code in the files follows current readr, dplyr, and ggplot2 documentation but was not executed when these materials were built; expected outputs were computed from the CSVs separately. Each file lists what was and wasn't tested.</span>
+</footer>
+
+<div class="reader" id="reader" hidden>
+  <div class="bar"><div class="wrap">
+    <div class="title"><i id="reader-swatch"></i><span id="reader-title"></span></div>
+    <div class="actions" style="margin:0">
+      <button class="btn sm ghost" id="reader-copy">Copy source</button>
+      <button class="btn sm" id="reader-close">Close</button>
+    </div>
+  </div></div>
+  <div class="article wrap" id="article"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.2/marked.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function () {
+  var FILES = {
+    "01": { path: "qmd/01_start_here_positron_and_r.qmd", color: "var(--extract)" },
+    "02": { path: "qmd/02_csv_extract_transform_visualize.qmd", color: "var(--transform)" },
+    "03": { path: "qmd/03_wikipedia_and_ai_etv_flows.qmd", color: "var(--visualize)" }
+  };
+  var cache = {};
+  var downloads = null;
+
+  function toast(msg) {
+    var t = document.createElement("div"); t.className = "toast"; t.textContent = msg;
+    document.body.appendChild(t); setTimeout(function () { t.remove(); }, 2600);
+  }
+  function fetchText(path) {
+    if (cache[path]) return Promise.resolve(cache[path]);
+    return fetch(path).then(function (r) { if (!r.ok) throw new Error(r.status); return r.text(); })
+      .then(function (t) { cache[path] = t; return t; });
+  }
+  function copyText(text) {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(text).then(function () { toast("Copied to clipboard"); }, function () { fallbackCopy(text); });
+    }
+    fallbackCopy(text); return Promise.resolve();
+  }
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea"); ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); toast("Copied to clipboard"); } catch (e) { toast("Select the text and copy it manually"); }
+    ta.remove();
+  }
+
+  /* --- downloads capability --- */
+  var dlButtons = Array.prototype.slice.call(document.querySelectorAll("[data-dl]"));
+  function setDownloadsState(ns) {
+    downloads = ns;
+    if (!ns) {
+      dlButtons.forEach(function (b) { b.disabled = true; });
+      var n = document.getElementById("dl-note"); if (n) n.hidden = false;
+    }
+  }
+  var ZIP_FILES = ["README.md", "qmd/01_start_here_positron_and_r.qmd", "qmd/02_csv_extract_transform_visualize.qmd",
+                   "qmd/03_wikipedia_and_ai_etv_flows.qmd", "data/cafe_orders.csv", "data/top_films_backup.csv"];
+  function buildZip() {
+    if (typeof JSZip === "undefined") return Promise.reject(new Error("JSZip missing"));
+    var zip = new JSZip(), root = zip.folder("etv-workshop");
+    return Promise.all(ZIP_FILES.map(function (p) { return fetchText(p).then(function (t) { root.file(p, t); }); }))
+      .then(function () { return zip.generateAsync({ type: "blob", compression: "DEFLATE" }); });
+  }
+  dlButtons.forEach(function (b) {
+    b.addEventListener("click", function () {
+      if (!downloads) return;
+      var path = b.getAttribute("data-dl"), name = b.getAttribute("data-name");
+      b.disabled = true;
+      var getBlob = path === "zip" ? buildZip()
+        : fetch(path).then(function (r) { if (!r.ok) throw new Error(r.status); return r.blob(); });
+      getBlob.then(function (blob) { return downloads.save({ filename: name, data: blob }); })
+        .then(function () { toast("Saved " + name); })
+        .catch(function (err) {
+          var code = err && err.code;
+          if (code === "declined") return;
+          if (code === "rate_limited") toast("One download at a time; try again in a moment.");
+          else toast("Couldn't download " + name + ". Use Copy source or the zip.");
+        })
+        .then(function () { b.disabled = false; });
+    });
+  });
+  if (window.claude && typeof window.claude.use === "function") {
+    window.claude.use("downloads").then(setDownloadsState, function () { setDownloadsState(null); });
+  } else { setDownloadsState(null); }
+
+  /* --- copy source --- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function (b) {
+    b.addEventListener("click", function () {
+      fetchText(b.getAttribute("data-copy")).then(copyText, function () { toast("Couldn't load the file."); });
+    });
+  });
+
+  /* --- reader --- */
+  var reader = document.getElementById("reader"), article = document.getElementById("article"), current = null;
+  function stripYaml(src) {
+    var m = src.match(/^---\n([\s\S]*?)\n---\n/);
+    var meta = {};
+    if (m) {
+      m[1].split("\n").forEach(function (line) {
+        var mm = line.match(/^(title|subtitle|author):\s*"?(.*?)"?\s*$/); if (mm) meta[mm[1]] = mm[2];
+      });
+      src = src.slice(m[0].length);
+    }
+    return { meta: meta, body: src };
+  }
+  var slots = [];
+  function callouts(src) {
+    // ::: {.callout-note collapse="true"} ... ## Title ... :::  -> rendered now, swapped in after marked runs
+    var out = [], lines = src.split("\n"), i = 0; slots = [];
+    while (i < lines.length) {
+      var open = lines[i].match(/^:::\s*\{\.callout-(\w+)([^}]*)\}\s*$/);
+      if (!open) { out.push(lines[i]); i++; continue; }
+      var kind = open[1], collapse = /collapse="true"/.test(open[2]);
+      var buf = []; i++;
+      while (i < lines.length && !/^:::\s*$/.test(lines[i])) { buf.push(lines[i]); i++; }
+      i++;
+      var title = "";
+      if (buf.length && /^## /.test(buf[0])) { title = buf.shift().replace(/^## /, ""); }
+      var inner = marked.parse(buf.join("\n"));
+      var html = collapse
+        ? '<div class="callout ' + kind + '"><details><summary>' + esc(title) + '</summary>' + inner + '</details></div>'
+        : '<div class="callout ' + kind + '">' + (title ? '<div class="ctitle">' + esc(title) + '</div>' : "") + inner + '</div>';
+      slots.push(html);
+      out.push("", "<!--CO" + (slots.length - 1) + "-->", "");
+    }
+    return out.join("\n");
+  }
+  function fillSlots(html) {
+    return html.replace(/<!--CO(\d+)-->/g, function (_, n) { return slots[+n] || ""; });
+  }
+  function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function render(key) {
+    var f = FILES[key]; current = f.path;
+    reader.hidden = false; document.body.style.overflow = "hidden";
+    reader.style.setProperty("--c", f.color);
+    document.getElementById("reader-swatch").style.background = f.color;
+    article.innerHTML = '<p class="unavail">Loading…</p>';
+    fetchText(f.path).then(function (src) {
+      var parts = stripYaml(src);
+      marked.setOptions({ gfm: true, breaks: false });
+      var html = fillSlots(marked.parse(callouts(parts.body)));
+      article.innerHTML = '<h1>' + esc(parts.meta.title || key) + '</h1><p class="sub">' + esc(parts.meta.subtitle || "") + '</p>' + html;
+      document.getElementById("reader-title").textContent = parts.meta.title || key;
+      Array.prototype.forEach.call(article.querySelectorAll("table"), function (t) {
+        var w = document.createElement("div"); w.className = "tbl"; t.parentNode.insertBefore(w, t); w.appendChild(t);
+      });
+      Array.prototype.forEach.call(article.querySelectorAll("pre"), function (pre) {
+        var b = document.createElement("button"); b.className = "copy"; b.textContent = "Copy";
+        b.addEventListener("click", function () { copyText(pre.querySelector("code").textContent); });
+        pre.appendChild(b);
+      });
+      Array.prototype.forEach.call(article.querySelectorAll("a[href^='http']"), function (a) { a.target = "_blank"; a.rel = "noopener"; });
+      reader.scrollTop = 0;
+    }, function () { article.innerHTML = '<p>Couldn\'t load the file. Download the zip instead.</p>'; });
+  }
+  function closeReader() { reader.hidden = true; document.body.style.overflow = ""; current = null; if (location.hash) history.replaceState(null, "", location.pathname + location.search); }
+  Array.prototype.forEach.call(document.querySelectorAll("[data-read]"), function (b) {
+    b.addEventListener("click", function () { var k = b.getAttribute("data-read"); location.hash = "read-" + k; });
+  });
+  document.getElementById("reader-close").addEventListener("click", closeReader);
+  document.getElementById("reader-copy").addEventListener("click", function () { if (current) fetchText(current).then(copyText); });
+  document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !reader.hidden) closeReader(); });
+  function route() {
+    var m = location.hash.match(/^#read-(0[123])$/);
+    if (m) render(m[1]); else if (!reader.hidden) { reader.hidden = true; document.body.style.overflow = ""; current = null; }
+  }
+  window.addEventListener("hashchange", route);
+  route();
+})();
+</script>
+
+</body></html>

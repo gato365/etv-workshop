@@ -1,0 +1,49 @@
+project:
+  type: website
+  output-dir: docs
+  render:
+    - index.qmd
+    - qr.qmd
+    - qmd/*.qmd
+  resources:
+    - etv-workshop.zip
+    - data/*.csv
+    - images/*
+
+website:
+  title: "ETV Workshop"
+  description: "Extract → Transform → Visualize in Positron and R. A 60-minute beginner workshop by Dr. Immanuel Williams."
+  site-url: https://gato365.github.io/etv-workshop/
+  repo-url: https://github.com/gato365/etv-workshop
+  favicon: images/qr-etv-workshop.png
+  page-navigation: true
+  navbar:
+    background: primary
+    left:
+      - text: "Home"
+        href: index.qmd
+      - text: "01 · Start here"
+        href: qmd/01_start_here_positron_and_r.qmd
+      - text: "02 · Café orders"
+        href: qmd/02_csv_extract_transform_visualize.qmd
+      - text: "03 · Wikipedia + AI"
+        href: qmd/03_wikipedia_and_ai_etv_flows.qmd
+      - text: "QR code"
+        href: qr.qmd
+    right:
+      - text: "Download zip"
+        href: etv-workshop.zip
+      - icon: github
+        href: https://github.com/gato365/etv-workshop
+  page-footer:
+    left: "ETV Workshop materials by Dr. Immanuel Williams. Café data is synthetic. Film table from Wikipedia contributors (CC BY-SA 4.0), retrieved 2026-10-28."
+    right: "Built with [Quarto](https://quarto.org)"
+
+format:
+  html:
+    theme: flatly
+    css: styles.css
+    toc: true
+    toc-depth: 2
+    code-copy: true
+    link-external-newwindow: true

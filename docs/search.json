@@ -1,0 +1,296 @@
+[
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "",
+    "text": "Minutes\nPart\nEssential?\n\n\n\n\n0:35–0:43\nExtract a Wikipedia table with htmltab, clean it, one chart\nEssential\n\n\n0:43–0:55\nAI-assisted ETV: you transform, then AI extends\nEssential\n\n\n0:55–1:00\nExit task and wrap-up\nEssential\n\n\n\nEverything marked optional can be done at home."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#time-plan-for-this-file",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#time-plan-for-this-file",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "",
+    "text": "Minutes\nPart\nEssential?\n\n\n\n\n0:35–0:43\nExtract a Wikipedia table with htmltab, clean it, one chart\nEssential\n\n\n0:43–0:55\nAI-assisted ETV: you transform, then AI extends\nEssential\n\n\n0:55–1:00\nExit task and wrap-up\nEssential\n\n\n\nEverything marked optional can be done at home."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#the-question",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#the-question",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "The question",
+    "text": "The question\n\nWhich decade produced the most of the 50 highest-grossing films of all time?\n\nWrite your guess down. (Hint: think about when ticket prices and global releases grew.)"
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#csv-vs.-html-whats-different-about-extract",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#csv-vs.-html-whats-different-about-extract",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "CSV vs. HTML: what’s different about Extract",
+    "text": "CSV vs. HTML: what’s different about Extract\nIn file 02 the data was already a table in a file built for computers. A web page is built for humans: the table you see is wrapped in HTML tags, mixed in with headings, images, footnotes, and navigation. Extracting it means:\n\nDownloading the page (all of it, not just the table).\nFinding the right table among several on the page.\nReading the cells and reconstructing rows and columns, including cells that span multiple rows or columns.\nCleaning out footnote markers, citation numbers, and formatting that was meant for eyes, not math.\n\nread_csv() does none of this because a CSV needs none of it. htmltab() does steps 1–3 for you and some of step 4. The rest of the cleaning is on you, which is why checking your result matters even more here."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#the-page",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#the-page",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "The page",
+    "text": "The page\nURL: https://en.wikipedia.org/wiki/List_of_highest-grossing_films\nThe first table on the page lists the top 50 films by worldwide box-office gross (not adjusted for inflation). Its columns, as shown on the page: Rank, Peak, Title, Worldwide gross, Year, Ref. Titles of films still in theaters carry a dagger (†).\n\n\n\n\n\n\nWarningThis table changes\n\n\n\nWikipedia updates this list as films are released. The numbers in your extract will differ from the backup CSV and from the checkpoints below. The structure and the code are what matter. The backup data/top_films_backup.csv was saved on 2026-10-28."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#extract-htmltab",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#extract-htmltab",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "EXTRACT — htmltab",
+    "text": "EXTRACT — htmltab\nAdd the package to your script and extract. We select the table with an XPath expression that means “the first table on the page with the CSS class wikitable.” This skips any sidebar or navigation tables and is more robust than guessing a table number.\nlibrary(htmltab)\n\nfilms_url &lt;- \"https://en.wikipedia.org/wiki/List_of_highest-grossing_films\"\n\ntop_films &lt;- htmltab(\n  doc   = films_url,\n  which = \"//table[contains(@class, 'wikitable')][1]\"\n)\nCheckpoint:\ndim(top_films)      # expect 50 rows; 5 or 6 columns\nnames(top_films)    # expect \"Rank\" \"Peak\" \"Title\" \"Worldwide gross\" \"Year\" (maybe \"Ref\")\nglimpse(top_films)\nTwo things to notice in glimpse():\n\nEvery column is chr (text), even Rank and Year. htmltab doesn’t guess types; it hands you the cell text. We’ll convert.\nhtmltab removes superscript citation markers by default, so the Ref column may come through empty and be dropped, or it may survive as an empty column. Either way we won’t use it.\n\n\n\n\n\n\n\nImportantIf htmltab fails (no internet, package didn’t install, Wikipedia changed)\n\n\n\nUse the backup. The column names are identical, so every line of code below works unchanged:\ntop_films &lt;- read_csv(\"data/top_films_backup.csv\")\nOne difference: read_csv() will guess that Rank, Peak, and Year are numbers while Worldwide gross stays text. The cleaning code below handles both cases."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#transform-two-cleaning-steps-and-a-decade-column",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#transform-two-cleaning-steps-and-a-decade-column",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "TRANSFORM — two cleaning steps and a decade column",
+    "text": "TRANSFORM — two cleaning steps and a decade column\nCleaning step 1: numbers stored as text. \"$2,937,323,455\" is text. parse_number() (readr) strips the $ and commas. Rank and Year are plain digits, so as.numeric() is enough and works whether they arrived as text (htmltab) or already-numeric (backup CSV).\nCleaning step 2: footnote markers. The dagger on \"Avengers: Endgame †\" is information (still in theaters), so rather than deleting it we record it as its own TRUE/FALSE column, then strip it from the title. grepl() tests whether a pattern appears; gsub() replaces it; trimws() removes leftover spaces.\nfilms_clean &lt;- top_films |&gt;\n  select(Rank, Peak, Title, `Worldwide gross`, Year) |&gt;   # drops Ref if present\n  mutate(\n    rank        = as.numeric(Rank),\n    year        = as.numeric(Year),\n    gross       = parse_number(`Worldwide gross`),\n    in_theaters = grepl(\"†\", Title),\n    title       = trimws(gsub(\"†\", \"\", Title)),\n    decade      = floor(year / 10) * 10\n  ) |&gt;\n  select(rank, title, year, decade, gross, in_theaters)\nWhy backticks around `Worldwide gross`? Column names with spaces need them. Our new names are lowercase with underscores so we never need backticks again.\nWhy floor(year / 10) * 10? 2015 / 10 = 201.5, floor → 201, × 10 → 2010. Every year from 2010 to 2019 lands on 2010. Remember this line; it comes back in the AI section.\nCheckpoint:\nglimpse(films_clean)\nSix columns; rank, year, decade, gross are dbl; in_theaters is lgl. Then:\nfilms_clean |&gt;\n  select(title, gross, decade, in_theaters) |&gt;\n  head(5)\n\n\n\ntitle\ngross\ndecade\nin_theaters\n\n\n\n\nAvengers: Endgame\n2937323455\n2010\nTRUE\n\n\nAvatar\n2923710708\n2000\nFALSE\n\n\n…\n\n\n\n\n\n\nsummary(films_clean$gross)   # min ≈ 1.06e9, max ≈ 2.9e9, no NAs\nsum(is.na(films_clean$year)) # 0\nIf gross has NAs, a row’s text didn’t parse. Look at it: films_clean |&gt; filter(is.na(gross))."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#transform-count-films-per-decade",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#transform-count-films-per-decade",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "TRANSFORM — count films per decade",
+    "text": "TRANSFORM — count films per decade\nfilms_by_decade &lt;- films_clean |&gt;\n  group_by(decade) |&gt;\n  summarise(\n    films     = n(),\n    avg_gross = mean(gross)\n  )\n\nfilms_by_decade\nCheckpoint (backup CSV, saved 2026-10-28):\n  decade films   avg_gross\n   &lt;dbl&gt; &lt;int&gt;       &lt;dbl&gt;\n1   1990     1 2257906828\n2   2000     3 1712629293\n3   2010    32 1354249742\n4   2020    14 1691370099\nThe row counts should add to 50. If they add to 49 or 51, a row was lost or duplicated in cleaning."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#visualize",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#visualize",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "VISUALIZE",
+    "text": "VISUALIZE\nggplot(films_by_decade, aes(x = factor(decade), y = films)) +\n  geom_col(fill = \"#3b4f8c\") +\n  labs(\n    title    = \"The 2010s dominate the all-time top 50\",\n    subtitle = \"Number of films among the 50 highest-grossing (not inflation-adjusted)\",\n    x        = \"Decade\",\n    y        = \"Films in the top 50\",\n    caption  = \"Source: Wikipedia, List of highest-grossing films (retrieved 2026-10-28)\"\n  ) +\n  theme_minimal()\nfactor(decade) tells ggplot to treat decades as labeled categories (so you get bars labeled 1990, 2000, 2010, 2020) rather than as a continuous number line with awkward gaps.\nCheckpoint: four bars; 2010 towers over the rest at 32.\nPlain-language answer: Of the 50 highest-grossing films, 32 (64%) were released in the 2010s, 14 in the 2020s, 3 in the 2000s, and just one (Titanic) in the 1990s. This is a list of unadjusted dollars, so it tilts toward recent years when ticket prices were higher and international markets larger. It tells us which era sold the most dollars of tickets, not which era made the most beloved films. Note also that the 2020s count is still growing; four films on the list are still in theaters."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#ai-assisted-etv-flows",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#ai-assisted-etv-flows",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "AI-assisted ETV flows",
+    "text": "AI-assisted ETV flows\nYou’ve just done an ETV cycle by hand. Now you’ll use an AI assistant (Claude, ChatGPT, Gemini, or similar) to do the next cycle faster, without giving up control of whether the answer is right.\nThe flow is always:\nQuestion → transformation plan → R code → checks → visualization → interpretation\nThe AI is good at the middle (plan, code). You own the ends (the question, and deciding whether the result actually answers it) and the checks in between. Never paste AI code and run it all at once. Run it one pipe step at a time and look at what comes out.\n\nStep 1: you do a small one yourself (3 minutes)\nNew question: Of the films still in theaters, which has the highest gross?\nWrite it with what you know: filter(), arrange(), desc(). (Answer: a one-row or few-row table, sorted.)\nfilms_clean |&gt;\n  filter(in_theaters) |&gt;\n  arrange(desc(gross))\nFour rows (as of the backup); Spider-Man: Brand New Day on top. Easy. The point is that you decided the steps.\n\n\nStep 2: the prompt template\nCopy this into your AI tool and fill in the brackets. Every bracket exists for a reason: the AI cannot see your data, so you have to describe it precisely, and you need to constrain it so it doesn’t invent columns or quietly drop rows.\nI am working in R with a data frame named `films_clean`. Please help me answer this question:\n\nQUESTION: [your question here]\n\nDATA FRAME: films_clean (50 rows). Columns and types:\n- rank: numeric (1 to 50)\n- title: character\n- year: numeric (release year, e.g. 2019)\n- decade: numeric (1990, 2000, 2010, 2020; computed as floor(year/10)*10)\n- gross: numeric (worldwide gross in US dollars, e.g. 2937323455)\n- in_theaters: logical (TRUE if the film is still in release)\n\nSAMPLE ROWS (first 3):\nrank  title              year  decade  gross       in_theaters\n1     Avengers: Endgame  2019  2010    2937323455  TRUE\n2     Avatar             2009  2000    2923710708  FALSE\n3     Spider-Man: Brand New Day  2026  2020  2512865567  TRUE\n\nCONSTRAINTS:\n- Use only base R plus the packages readr, dplyr, and ggplot2. Do not load tidyverse or other packages.\n- Use the native pipe |&gt; (not %&gt;%).\n- Do not invent columns that are not listed above.\n- There are no missing values. Do not add na.rm or filter out NAs unless I ask.\n- Do not change the number of rows unless the question requires it, and if it does, say so.\n\nPLEASE RESPOND IN THIS ORDER:\n1. A plain-language transformation plan (2 to 5 numbered steps) BEFORE any code.\n2. The R code, built one pipe step at a time with a short comment per step.\n3. Check code I can run to verify: the row count after each filter or group, any NAs introduced, the groups that were created, and the final summary table.\n4. A ggplot2 chart whose title states the answer.\n5. One sentence stating what the result means in plain language and one limitation.\n\n\nStep 3: use AI to extend the analysis (6 minutes)\nYour new question: Which decade had the highest average gross among the top 50, and is the leading decade also the one with the most films?\nPaste the template with that question. Below is an example of a plausible AI response. Read it before you run anything. It contains one mistake.\n\n\n\n\n\n\nNoteExample AI response (contains an error; find it)\n\n\n\n\n\nTransformation plan\n\nStart from films_clean (50 rows).\nGroup the films by decade.\nFor each decade compute the number of films and the mean of gross.\nSort the result so the highest average gross is first.\nPlot average gross by decade as a bar chart.\n\nCode\ndecade_avg &lt;- films_clean |&gt;\n  mutate(decade = round(year, -1)) |&gt;          # bucket each year into its decade\n  group_by(decade) |&gt;                          # one group per decade\n  summarise(\n    films     = n(),                           # how many films\n    avg_gross = mean(gross)                    # average worldwide gross\n  ) |&gt;\n  arrange(desc(avg_gross))                     # highest average first\n\ndecade_avg\nChecks\nnrow(films_clean)                 # 50, unchanged\nsum(is.na(decade_avg$avg_gross))  # 0\nsum(decade_avg$films)             # should be 50\ndecade_avg                        # inspect the groups\nChart\nggplot(decade_avg, aes(x = factor(decade), y = avg_gross / 1e9)) +\n  geom_col(fill = \"#3b4f8c\") +\n  labs(\n    title = \"Average gross per top-50 film, by decade\",\n    x = \"Decade\", y = \"Average gross (billions USD)\"\n  ) +\n  theme_minimal()\nInterpretation\nThe decade with the highest average gross is the one at the top of decade_avg. Limitation: these are unadjusted dollars, so later decades are inflated by higher ticket prices.\n\n\n\n\n\nStep 4: find and fix the mistake (3 minutes)\nRun the code one step at a time. After the mutate() line, look at the result:\nfilms_clean |&gt;\n  mutate(decade_ai = round(year, -1)) |&gt;\n  select(title, year, decade, decade_ai) |&gt;\n  filter(decade != decade_ai)\nSomething is wrong. round(year, -1) rounds to the nearest ten, so 2015 becomes 2020 and 2005 becomes 2010. That isn’t a decade; it’s a rounding bucket. Films from 2015–2019 get moved into the “2020s.” The films column will still sum to 50 (so that check passes!), and there are no NAs (that check passes too), yet the groups are wrong. The check that catches it is the one the template asked for: inspect the groups that were created, and compare against a column you already trust.\nThe fix is the line you already wrote earlier in this file:\ndecade_avg &lt;- films_clean |&gt;\n  group_by(decade) |&gt;                 # use the decade column we already built with floor()\n  summarise(films = n(), avg_gross = mean(gross)) |&gt;\n  arrange(desc(avg_gross))\n\ndecade_avg\nCheckpoint (backup data): the 1990s lead on average (one film, Titanic, at $2.26B), then the 2000s (~$1.71B), then the 2020s (~$1.69B), with the 2010s last (~$1.35B) despite having 32 films. So the answer to the question is no: the decade with the most films has the lowest average. Many films, modest grosses each, versus a few blockbusters.\nCandy for the first person who can say why a one-film decade “winning” on average is a weak result. (Averages of one are not averages.)\n\n\n\n\n\n\nTipWhat to take from this\n\n\n\n\nThe AI’s plan was fine. The code was almost right. The mistake was a single function choice that produced plausible-looking output and passed two of the three checks.\nThe AI also ignored a constraint: it rebuilt decade even though the template said the column already existed. Re-deriving a column you were given is a red flag.\nYou caught it by running one step and comparing to something you trusted. That’s the habit.\n\n\n\n\n\nOptional extension\nAsk the AI a new question of your own about films_clean. Good ones: “How many films per year since 2015?” “What share of the total top-50 gross is from films still in theaters?” Run its code step by step and write one sentence on whether the result answers your question."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#troubleshooting",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#troubleshooting",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\nhtmltab error: “couldn’t find table” / which didn’t match — Wikipedia changed the page. Try which = 1 (first table on the page), or open the URL in a browser, right-click the table, Inspect, and look at its class. Or use the backup CSV.\nhtmltab returns a table but the columns look wrong — the table may have a two-row header. Try htmltab(doc = films_url, which = \"...\", header = 1). Or use the backup CSV; the structure of this activity doesn’t depend on live data.\nHTTP error 403 / 429 — Wikipedia is rate-limiting the room’s shared Wi-Fi. Use the backup CSV.\nparse_number() error “is.character(x) is not TRUE” — you passed it a column that’s already numeric (this happens with the backup CSV for Year). Use as.numeric() for those; keep parse_number() for the dollar column.\nDagger (†) didn’t match — your file encoding may have mangled it. Run grepl(\"†\", Title) instead, which is the same character written as a Unicode code.\nAI code uses %&gt;% or library(tidyverse) — it ignored your constraints. Paste back: “Please follow the constraints: native pipe, individual packages.” If it keeps ignoring them, that itself is useful information about the tool."
+  },
+  {
+    "objectID": "qmd/03_wikipedia_and_ai_etv_flows.html#exit-task-5-minutes-essential",
+    "href": "qmd/03_wikipedia_and_ai_etv_flows.html#exit-task-5-minutes-essential",
+    "title": "03 · Wikipedia Tables and AI-Assisted ETV Flows",
+    "section": "Exit task (5 minutes, essential)",
+    "text": "Exit task (5 minutes, essential)\nOn an index card or in a shared doc, write:\n\nA question you could answer with data you can get (any data, not today’s).\nIts ETV steps: where would you Extract the data from and with what function? What Transform steps (one or two dplyr verbs) would you need? What Visualization would show the answer?\nOne AI check: describe, in one sentence, how you confirmed that one AI-generated transformation today was (or wasn’t) correct. Name the specific thing you compared.\n\nHand it in on your way out. Take candy.\n\n\n\n\n\n\n\nNoteWhat was verified and what wasn’t\n\n\n\n\n\n\nVerified on 2026-10-28: the Wikipedia URL, the position of the table as the first wikitable on the page, its displayed column names, and all 50 rows (saved to the backup CSV). The htmltab install command and CRAN archival date (2022-11-11) were checked against the GitHub README and CRAN.\nNot tested: the R code was not executed when these materials were generated (no R available in the build environment). The exact column names htmltab returns, in particular whether the Ref column survives, should be confirmed live with names(top_films); the select() line is written to work either way. Checkpoint numbers were computed from the backup CSV with a separate tool."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html",
+    "href": "qmd/01_start_here_positron_and_r.html",
+    "title": "01 · Start Here: Positron and R",
+    "section": "",
+    "text": "It’s going to be a lot, but we got this.\nThis first file takes about 10 minutes of the live hour. Its only job is to get you oriented in Positron and make sure the packages we need are ready. The real data work starts in 02_csv_extract_transform_visualize.qmd."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#how-r-positron-and-packages-fit-together",
+    "href": "qmd/01_start_here_positron_and_r.html#how-r-positron-and-packages-fit-together",
+    "title": "01 · Start Here: Positron and R",
+    "section": "How R, Positron, and packages fit together",
+    "text": "How R, Positron, and packages fit together\nThree things that beginners often blur together:\n\n\n\n\n\n\n\n\nThing\nWhat it is\nAnalogy\n\n\n\n\nR\nThe programming language and the engine that runs your code\nThe engine of a car\n\n\nPositron\nThe app you type in. It shows your files, code, console, data, and plots in one window\nThe car’s dashboard and steering wheel\n\n\nPackages\nAdd-ons written by the R community that give R new functions\nUpgrades you bolt onto the car\n\n\n\nR can run without Positron (it’s just less pleasant). Positron cannot run R code without R installed. Packages live inside your R installation, not inside Positron.\nWe will use four packages today, each introduced only when we need it:\n\nreadr — reads CSV files into R (Extract)\ndplyr — transforms data: select, filter, mutate, group, summarise (Transform)\nggplot2 — makes plots (Visualize)\nhtmltab — pulls tables out of web pages (Extract, file 03)\n\nThese first three are part of the “tidyverse” family. You may see tutorials run library(tidyverse) to load all of them at once (plus about five more). We load them one at a time so you know exactly which package each function comes from."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#installing-vs.-loading-a-package",
+    "href": "qmd/01_start_here_positron_and_r.html#installing-vs.-loading-a-package",
+    "title": "01 · Start Here: Positron and R",
+    "section": "Installing vs. loading a package",
+    "text": "Installing vs. loading a package\nThis confuses everyone at first, so here is the rule:\n\nInstall once per computer. install.packages(\"readr\") downloads the package from CRAN (the official R package repository) onto your hard drive. You do this one time, like installing an app on your phone.\nLoad once per session. library(readr) opens the package so you can use its functions right now. You do this at the top of every script, every time you start R — like opening the app.\n\nIf you see the error could not find function \"read_csv\", you forgot to load. If you see there is no package called 'readr', you forgot to install."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#install-the-packages",
+    "href": "qmd/01_start_here_positron_and_r.html#install-the-packages",
+    "title": "01 · Start Here: Positron and R",
+    "section": "Install the packages",
+    "text": "Install the packages\nRun this once, in the Console. It will take a minute or two and print a lot of text. That’s normal.\n# Standard CRAN installs — run once per computer\ninstall.packages(c(\"readr\", \"dplyr\", \"ggplot2\", \"remotes\"))\nNow the special case. htmltab is not currently on CRAN. It was removed from the CRAN repository on 2022-11-11, so install.packages(\"htmltab\") will fail with package 'htmltab' is not available. A volunteer maintains a fork on GitHub, so we install from there using the remotes package, which knows how to download and build a package directly from a GitHub repository:\n# htmltab is not on CRAN; install from the maintained GitHub fork\nremotes::install_github(\"htmltab/htmltab\")\nWhy the difference? CRAN packages are pre-checked and pre-built, so install.packages() just downloads a finished file. A GitHub package is raw source code, so remotes::install_github() downloads it, builds it on your computer, and then installs it. The result is the same: a package in your library.\n\n\n\n\n\n\nNoteVerified\n\n\n\nThe install command above was checked against the htmltab/htmltab GitHub README and the CRAN archive page on 2026-10-28. The original repository (crubba/htmltab) is unmaintained; the htmltab/htmltab fork is the one to use.\n\n\nCheckpoint: run this and you should see four TRUEs:\nc(\"readr\", \"dplyr\", \"ggplot2\", \"htmltab\") %in% rownames(installed.packages())"
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#load-the-packages",
+    "href": "qmd/01_start_here_positron_and_r.html#load-the-packages",
+    "title": "01 · Start Here: Positron and R",
+    "section": "Load the packages",
+    "text": "Load the packages\nThis goes at the top of every script you write today:\nlibrary(readr)\nlibrary(dplyr)\nlibrary(ggplot2)\n(We’ll add library(htmltab) in file 03.) If dplyr prints a message about objects being masked from package:stats, ignore it. That’s normal."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#a-quick-tour-of-positron-5-minutes-live",
+    "href": "qmd/01_start_here_positron_and_r.html#a-quick-tour-of-positron-5-minutes-live",
+    "title": "01 · Start Here: Positron and R",
+    "section": "A quick tour of Positron (5 minutes, live)",
+    "text": "A quick tour of Positron (5 minutes, live)\nPositron is built on the same foundation as VS Code, so if you’ve used that, this will feel familiar. If not, here’s everything you need for today.\n\nOpen the workshop folder\nFile → Open Folder… and choose your unzipped etv-workshop folder. The left sidebar (Explorer) now shows qmd/ and data/. Opening the folder (not just a file) matters: it sets your working directory, which is how R finds data/cafe_orders.csv later.\nCheckpoint: in the Console, type getwd() and press Enter. The path printed should end in etv-workshop. If it doesn’t, see Troubleshooting.\n\n\nWrite and save a script\n\nFile → New File… → choose R File (or create a file named my_script.R).\nType library(readr) on line 1.\nSave with Ctrl+S (Windows/Linux) or Cmd+S (Mac). Name it my_script.R inside the etv-workshop folder.\n\nA script is just a text file of R code. Saving it is how your work survives closing Positron. The Console, by contrast, forgets everything when you quit.\n\n\nRun code\nPut your cursor on a line and press Ctrl+Enter (Windows/Linux) or Cmd+Enter (Mac). That line is sent to the Console and runs. Highlight several lines first and the whole selection runs. This is the single most important shortcut today.\nPositron also has a Run ▶ button in the top-right of the editor that runs the entire file.\n\n\nThe Console\nThe Console (bottom panel) is where R lives. You can type directly into it for quick experiments (2 + 2), but anything you want to keep belongs in the script. Code you run from the script shows up here, along with its output and any errors.\n\n\nInspect data\nWhen you create a data frame (file 02), it appears in the Variables pane on the right, with its row and column counts. Click the small table icon next to its name to open the Data Explorer, a spreadsheet-like view where you can scroll, sort, and filter without writing code. This is your best friend for checking “did that transformation do what I thought?”\n\n\nView plots\nPlots appear in the Plots pane on the right. Arrows let you flip back to earlier plots; there’s a save button to export.\n\n\nThe pipe |&gt;\nYou’ll see this symbol constantly today. x |&gt; f() means “take x, then do f() to it.” It lets us write transformations as a readable top-to-bottom recipe:\ncafe |&gt;\n  filter(category == \"Coffee\") |&gt;\n  summarise(total = sum(quantity))\nRead it aloud as: “Take cafe, then keep the Coffee rows, then sum the quantity.” Positron can type it for you with Ctrl+Shift+M (Windows/Linux) or Cmd+Shift+M (Mac).\n\n\n\n\n\n\nTipNot tested in this build\n\n\n\nKeyboard shortcuts are the standard Positron defaults as documented, but weren’t machine-verified. If one doesn’t work, open the Command Palette (Ctrl/Cmd+Shift+P) and type “Open Keyboard Shortcuts” to look it up."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#the-etv-framework-in-one-picture",
+    "href": "qmd/01_start_here_positron_and_r.html#the-etv-framework-in-one-picture",
+    "title": "01 · Start Here: Positron and R",
+    "section": "The ETV framework in one picture",
+    "text": "The ETV framework in one picture\nEverything today follows the same three moves:\n EXTRACT                 TRANSFORM                     VISUALIZE\n bring data into R  --&gt;  reshape it to answer     --&gt;  draw the answer\n read_csv()              a specific question           ggplot()\n htmltab()               filter(), mutate(),\n                         group_by(), summarise()\nThe framework starts with a question. The question decides which rows to keep, which columns to compute, and which plot to draw. Without a question, you’re just pushing data around."
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#troubleshooting",
+    "href": "qmd/01_start_here_positron_and_r.html#troubleshooting",
+    "title": "01 · Start Here: Positron and R",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\nPackage install fails with “non-zero exit status” or “compilation failed” Run install.packages(\"readr\", type = \"binary\") (Windows/Mac). If install_github fails on Windows, you may need Rtools from https://cran.r-project.org/bin/windows/Rtools/. If it still fails: skip htmltab for today and use the backup CSV in file 03.\ninstall_github says “API rate limit exceeded” Too many people on the same Wi-Fi hit GitHub at once. Wait two minutes and try again, or use the backup CSV.\nthere is no package called 'remotes' You skipped the first install line. Run install.packages(\"remotes\") first.\nR can’t find my file (cannot open file 'data/cafe_orders.csv') Your working directory is wrong. Run getwd(). If it doesn’t end in etv-workshop, use File → Open Folder… and pick the right folder, then restart R (Console menu → Restart R). Or run setwd(\"/full/path/to/etv-workshop\") as a last resort.\nPositron shows “No interpreter” or a Python interpreter Click the interpreter selector (top-right) and pick R. If no R appears, R isn’t installed or Positron can’t see it; restart Positron after installing R.\nNothing happens when I press Ctrl/Cmd+Enter Make sure your cursor is in the editor (not the Console) and the file is saved as .R.\n\n\n\n\n\n\n\nNoteInstructor checklist\n\n\n\n\n\n\nBring candy! (for first correct prediction, first fixed error, first plot)\nOpen with: “It’s going to be a lot, but we got this.”\nProject the workshop site and its QR code page (https://gato365.github.io/etv-workshop/qr.html)\nPoll: who has R installed? Hands up. Anyone without it: pair with a neighbor or start the R installer now\nPoll: who has Positron installed? Hands up. Same fix\nConfirm everyone has the zip downloaded and unzipped\nPoll: hands up if getwd() ends in etv-workshop. Fix stragglers now, not at minute 20\nPoll: hands up if the four-TRUE checkpoint passed. Pair anyone without htmltab with a neighbor for file 03, or point them at the backup CSV\nHave data/top_films_backup.csv ready in case Wikipedia or htmltab fails live\nWatch the clock: 10 / 25 / 25 split, with wrap-up folded into the last 5 minutes of file 03\nRemind: run code in small pieces; check the Data Explorer after every transformation"
+  },
+  {
+    "objectID": "qmd/01_start_here_positron_and_r.html#live-agenda-60-minutes",
+    "href": "qmd/01_start_here_positron_and_r.html#live-agenda-60-minutes",
+    "title": "01 · Start Here: Positron and R",
+    "section": "Live agenda (60 minutes)",
+    "text": "Live agenda (60 minutes)\n\n\n\n\n\n\n\n\nTime\nFile\nWhat happens\n\n\n\n\n0:00–0:10\n01\nOrientation, confirm installs, the ETV picture\n\n\n0:10–0:35\n02\nGuided CSV activity: café orders, one question, one chart\n\n\n0:35–0:55\n03\nWikipedia table with htmltab, then AI-assisted transformation\n\n\n0:55–1:00\n03\nExit task and wrap-up\n\n\n\nEssential items are in the main flow of each file. Optional extensions are marked and can be skipped or done at home."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "ETV Workshop: Positron + R",
+    "section": "",
+    "text": "A beginner’s hour in Positron and R. You’ll bring data in, reshape it to answer one real question, draw the answer, and then use an AI assistant to run the next cycle faster without giving up the checks. Three files, two datasets, one framework.\n\n\n“It’s going to be a lot, but we got this.” Opening line. Candy is involved."
+  },
+  {
+    "objectID": "index.html#minute-zero-two-polls-then-download",
+    "href": "index.html#minute-zero-two-polls-then-download",
+    "title": "ETV Workshop: Positron + R",
+    "section": "Minute zero: two polls, then download",
+    "text": "Minute zero: two polls, then download\n\n\n\n\n\n\nImportantHands up\n\n\n\n\nWho has R installed?\nWho has Positron installed?\n\nIf your hand stayed down for either one, tell the instructor now. Everyone else: scan the code or tap the button to get the materials.\n\n\n\n\n\n\n\nScan to open this site on your phone or laptop\n\n\n\ngato365.github.io/etv-workshop\n\nOpen a full-screen version for the projector\n\n\n\nEverything in one download\n⬇ Download etv-workshop.zip\nUnzip it, keep the folder together, and in Positron use File → Open Folder… on the etv-workshop folder.\netv-workshop/\n├── README.md\n├── qmd/\n│   ├── 01_start_here_positron_and_r.qmd\n│   ├── 02_csv_extract_transform_visualize.qmd\n│   └── 03_wikipedia_and_ai_etv_flows.qmd\n└── data/\n    ├── cafe_orders.csv\n    └── top_films_backup.csv\nOnly need one file? cafe_orders.csv · top_films_backup.csv"
+  },
+  {
+    "objectID": "index.html#the-framework",
+    "href": "index.html#the-framework",
+    "title": "ETV Workshop: Positron + R",
+    "section": "The framework",
+    "text": "The framework\n\n\n\nExtract\n\nBring the data in\nFrom a CSV file or straight out of a Wikipedia table. One package each.\nreadr::read_csv() · htmltab::htmltab()\n\n\n\n\n\nTransform\n\nReshape it to the question\nKeep what matters, fix what’s broken, group and summarise. Always with |&gt;.\nselect() · filter() · mutate() · group_by() · summarise()\n\n\n\n\n\nVisualize\n\nDraw the answer\nOne clearly labeled chart whose title states the finding, not the variables.\nggplot() + geom_col() + labs(title = \"the answer\")"
+  },
+  {
+    "objectID": "index.html#run-of-show",
+    "href": "index.html#run-of-show",
+    "title": "ETV Workshop: Positron + R",
+    "section": "Run of show",
+    "text": "Run of show\nThree files, in order. Essential parts fit the hour; optional extensions are marked inside each file and can go home with you.\n\n\n\nTime\nFile\nWhat happens\n\n\n\n\n0:00–0:10\n01 · Start here: Positron and R\nPolls (R? Positron?), download the zip, how R, Positron, and packages relate, install vs. load, a five-minute Positron tour, the ETV picture. Pre-workshop checklist and instructor checklist inside.\n\n\n0:10–0:35\n02 · Café orders: a complete ETV cycle\nOne question: which drink category makes the most money, and is it volume or price? Extract with read_csv(), fix a price column stored as text, group and summarise, draw two bar charts, interpret in plain language.\n\n\n0:35–0:55\n03 · Wikipedia tables and AI-assisted flows\nPull the top-50 highest-grossing films table out of Wikipedia with htmltab(), clean it, count films per decade. Then the AI loop: question → plan → code → checks → chart → interpretation, with a prompt template and a planted mistake to find.\n\n\n0:55–1:00\n03\nExit task and wrap-up"
+  },
+  {
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "ETV Workshop: Positron + R",
+    "section": "Data",
+    "text": "Data\nBoth files are inside the zip. Download them separately here if you only need one.\n\n\n\ncafe_orders.csv · used in 02\nSynthetic. Four simulated weeks of orders at a fictional campus café (Sept 21 – Oct 18, 2026). No real business. 506 rows, 10 columns. The price column is stored as text with a dollar sign on purpose; parsing it is the cleaning task.\n\n\n\n\ntop_films_backup.csv · fallback for 03\nThe first table on Wikipedia’s List of highest-grossing films, saved 2026-10-28 with its column names unchanged so the same cleaning code works on the live extract and on this file. 50 rows, 5 columns. Daggers (†) mark films still in theaters. Source: Wikipedia contributors, CC BY-SA 4.0."
+  },
+  {
+    "objectID": "index.html#before-you-arrive",
+    "href": "index.html#before-you-arrive",
+    "title": "ETV Workshop: Positron + R",
+    "section": "Before you arrive",
+    "text": "Before you arrive\nInstalls take 10–15 minutes and eat the hour if done live. Please finish these first. Full details are in file 01.\n\n\nPre-workshop checklist\n\nInstall R 4.2 or newer from cloud.r-project.org (or with rig). Positron does not include R.\nInstall Positron from positron.posit.co.\nOpen Positron once and confirm the interpreter selector (top-right) shows R 4.x.\nRun the package installs on the right in the Console. Say yes to prompts.\nDownload the zip above, unzip it, and in Positron use File → Open Folder… on the etv-workshop folder.\n\nCandy for the first correct prediction, the first fixed error, and the first plot.\n\n\nPackage installs (once per computer)\n# From CRAN\ninstall.packages(c(\"readr\", \"dplyr\", \"ggplot2\", \"remotes\"))\n\n# htmltab was removed from CRAN on 2022-11-11,\n# so it installs from the maintained GitHub fork:\nremotes::install_github(\"htmltab/htmltab\")\n\n# Checkpoint: four TRUEs\nc(\"readr\", \"dplyr\", \"ggplot2\", \"htmltab\") %in%\n  rownames(installed.packages())\nInstall once; load with library() at the top of every script."
+  },
+  {
+    "objectID": "index.html#if-something-breaks",
+    "href": "index.html#if-something-breaks",
+    "title": "ETV Workshop: Positron + R",
+    "section": "If something breaks",
+    "text": "If something breaks\nThe four failures that eat workshop time. Each file has a longer troubleshooting list.\ncannot open file 'data/cafe_orders.csv' Wrong working directory. Run getwd(); it should end in etv-workshop. Use File → Open Folder… on that folder, then restart R.\npackage 'htmltab' is not available Expected: it isn’t on CRAN. Use remotes::install_github(\"htmltab/htmltab\"). If GitHub rate-limits the room, skip it and use top_films_backup.csv.\ncould not find function \"read_csv\" The package is installed but not loaded this session. Run library(readr). Same fix for dplyr and ggplot2 functions.\nhtmltab: table not found / columns look wrong Wikipedia changed the page. Try which = 1, or read the backup CSV; the column names match, so the rest of the code runs unchanged.\n\n\n\n\n\n\nNoteAbout the code in these files\n\n\n\n\n\nR code follows current readr, dplyr, and ggplot2 documentation but was not executed when these materials were built; expected outputs were computed from the CSVs separately. Each file lists what was and wasn’t tested."
+  },
+  {
+    "objectID": "qr.html",
+    "href": "qr.html",
+    "title": "Scan to get the workshop materials",
+    "section": "",
+    "text": "gato365.github.io/etv-workshop\n\nThen tap Download zip on the home page.\n\n\nProject this page. Need a printable copy? PNG · SVG"
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html",
+    "href": "qmd/02_csv_extract_transform_visualize.html",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "",
+    "text": "A campus café wants to know where its money comes from.\n\nWhich drink category brings in the most revenue, and is that because it sells more drinks or pricier drinks?\n\nEverything in this file serves that one question. Before touching any code, write down your prediction:\n\n\n\n\n\n\nTipPredict first\n\n\n\nThree categories: Coffee, Tea, Specialty (mochas, frappes, hot chocolate). Which one do you think brings in the most total money? Which one do you think has the highest revenue per order? Write both guesses on paper. Candy for the closest."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#the-question",
+    "href": "qmd/02_csv_extract_transform_visualize.html#the-question",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "",
+    "text": "A campus café wants to know where its money comes from.\n\nWhich drink category brings in the most revenue, and is that because it sells more drinks or pricier drinks?\n\nEverything in this file serves that one question. Before touching any code, write down your prediction:\n\n\n\n\n\n\nTipPredict first\n\n\n\nThree categories: Coffee, Tea, Specialty (mochas, frappes, hot chocolate). Which one do you think brings in the most total money? Which one do you think has the highest revenue per order? Write both guesses on paper. Candy for the closest."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#the-data",
+    "href": "qmd/02_csv_extract_transform_visualize.html#the-data",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "The data",
+    "text": "The data\nFile: data/cafe_orders.csv · 506 rows · 10 columns\n\n\n\n\n\n\nWarningSynthetic data\n\n\n\nThis dataset is simulated for teaching. It was generated with a random-number seed to look like four weeks of orders (Sept 21 – Oct 18, 2026) at a fictional campus café. No real business is represented. The quirks are deliberate.\n\n\n\n\n\nColumn\nType (as stored)\nMeaning\n\n\n\n\norder_id\nnumber\nUnique order number\n\n\ndate\ndate (YYYY-MM-DD)\nDay of the order\n\n\nday_of_week\ntext\nMonday … Sunday\n\n\nhour\nnumber\nHour of day, 24-hour clock (7 = 7 am, 13 = 1 pm)\n\n\ndrink\ntext\nSpecific drink name\n\n\ncategory\ntext\nCoffee, Tea, or Specialty\n\n\nsize\ntext\nSmall, Medium, Large\n\n\nprice\ntext\nPrice of one drink, stored like \"$4.75\"\n\n\nquantity\nnumber\nHow many of that drink in the order\n\n\nloyalty_member\ntext\nyes / no\n\n\n\nNotice the price column. It has a dollar sign, so R will read it as text, not as a number. You can’t add up text. Fixing that is our cleaning task."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#set-up-your-script",
+    "href": "qmd/02_csv_extract_transform_visualize.html#set-up-your-script",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "Set up your script",
+    "text": "Set up your script\nCreate a new R file in your etv-workshop folder, save it as cafe_etv.R, and start with the packages:\nlibrary(readr)    # Extract: read CSV files\nlibrary(dplyr)    # Transform: filter, mutate, group, summarise\nlibrary(ggplot2)  # Visualize: make plots\nRun those three lines (Ctrl/Cmd+Enter on each, or highlight all and run). Then confirm R can see the data folder:\ngetwd()                    # should end in \"etv-workshop\"\nfile.exists(\"data/cafe_orders.csv\")   # should print TRUE\nIf that prints FALSE, stop and fix it (see Troubleshooting in file 01). Nothing else works until this is TRUE."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#extract-bring-the-data-in",
+    "href": "qmd/02_csv_extract_transform_visualize.html#extract-bring-the-data-in",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "EXTRACT — bring the data in",
+    "text": "EXTRACT — bring the data in\nread_csv() from readr reads the file and gives it a name in R. We’ll call it cafe.\ncafe &lt;- read_csv(\"data/cafe_orders.csv\")\nCheckpoint: the Console prints a summary like:\nRows: 506 Columns: 10\n── Column specification ──────────────────\nDelimiter: \",\"\nchr  (6): day_of_week, drink, category, size, price, loyalty_member\ndbl  (3): order_id, hour, quantity\ndate (1): date\nThree things to notice:\n\nchr means character (text), dbl means double (a number with decimals), date means readr recognized the date format.\nprice is listed under chr. That’s our problem.\ncafe now appears in the Variables pane. Click the table icon to open it in the Data Explorer and scroll around. Get a feel for it.\n\nTwo quick ways to look at the data in code:\nglimpse(cafe)   # one line per column: name, type, first few values\nhead(cafe)      # first 6 rows\nglimpse() is from dplyr and is the fastest way to answer “what did I just load?”"
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#transform-step-1-pick-the-columns-that-matter",
+    "href": "qmd/02_csv_extract_transform_visualize.html#transform-step-1-pick-the-columns-that-matter",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "TRANSFORM — step 1: pick the columns that matter",
+    "text": "TRANSFORM — step 1: pick the columns that matter\nOur question needs category, price, and quantity. We’ll keep drink too, for context. select() chooses columns:\ncafe |&gt;\n  select(drink, category, price, quantity)\nRun it. The Console shows a 506 × 4 table. We didn’t save this anywhere (no &lt;-), so cafe is unchanged. That’s a good habit: look first, save later."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#transform-step-2-the-cleaning-task",
+    "href": "qmd/02_csv_extract_transform_visualize.html#transform-step-2-the-cleaning-task",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "TRANSFORM — step 2: the cleaning task",
+    "text": "TRANSFORM — step 2: the cleaning task\nWe need to turn \"$4.75\" into 4.75. readr has a function built for exactly this: parse_number() strips out everything that isn’t part of a number and returns the number.\nparse_number(\"$4.75\")       # try it: returns 4.75\nparse_number(\"$1,234.50\")   # also handles commas: 1234.5\nThe decision: we could instead edit the CSV by hand and delete the dollar signs. We don’t, for two reasons. First, 506 rows is tedious and 50,000 would be impossible. Second, and more important, if the café sends us next month’s file, our script fixes it automatically. Clean in code, not in the file.\nmutate() from dplyr creates new columns (or overwrites existing ones). We’ll make price_num and, while we’re there, revenue for each order:\ncafe_clean &lt;- cafe |&gt;\n  mutate(\n    price_num = parse_number(price),\n    revenue   = price_num * quantity\n  )\nThis time we saved the result as cafe_clean because we’ll build on it.\nCheckpoint: verify it worked.\nglimpse(cafe_clean)\nYou should now see 12 columns: price_num as dbl and revenue as dbl. Check a few values make sense:\ncafe_clean |&gt;\n  select(price, price_num, quantity, revenue) |&gt;\n  head()\nA $5.75 drink with quantity 1 should show revenue 5.75. A $5.00 drink with quantity 2 should show 10.00. If price_num is full of NA, something went wrong; ask for help.\nOne more sanity check, because it catches typos in the data that would otherwise silently poison every result:\nsummary(cafe_clean$price_num)\nMinimum should be 2.50, maximum 7.00, no NAs. A minimum of 0 or a maximum of 475 would mean a price was mistyped in the source."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#transform-step-3-group-and-summarise",
+    "href": "qmd/02_csv_extract_transform_visualize.html#transform-step-3-group-and-summarise",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "TRANSFORM — step 3: group and summarise",
+    "text": "TRANSFORM — step 3: group and summarise\nNow the heart of the question. group_by() splits the data into one group per category; summarise() collapses each group into one row of totals.\ncafe_summary &lt;- cafe_clean |&gt;\n  group_by(category) |&gt;\n  summarise(\n    orders        = n(),\n    total_revenue = sum(revenue),\n    avg_revenue   = mean(revenue)\n  )\n\ncafe_summary\nCheckpoint: three rows.\n  category  orders total_revenue avg_revenue\n  &lt;chr&gt;      &lt;int&gt;         &lt;dbl&gt;       &lt;dbl&gt;\n1 Coffee       276         1612         5.84\n2 Specialty    126          919.        7.29\n3 Tea          104          562.        5.40\n(Your digits may display with slightly different rounding; the values are the same.)\nStop and read the table. Compare it to your prediction. Coffee makes the most total money. But Specialty makes the most per order, by a lot. That’s already most of the answer.\n\n\n\n\n\n\nNoteWhy n()?\n\n\n\nn() counts the rows in each group. It takes no arguments. It only works inside summarise() or mutate() after a group_by()."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#visualize-draw-the-answer",
+    "href": "qmd/02_csv_extract_transform_visualize.html#visualize-draw-the-answer",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "VISUALIZE — draw the answer",
+    "text": "VISUALIZE — draw the answer\nA plot should make the answer visible in two seconds. For “which category makes the most?” a bar chart is right.\nggplot2 builds plots in layers. First you say what data and which columns map to which axes (aesthetics). Then you add a layer that says how to draw them (geom_col for bars whose heights are already computed).\nggplot(cafe_summary, aes(x = category, y = total_revenue)) +\n  geom_col(fill = \"#2a6f4e\") +\n  labs(\n    title    = \"Coffee brings in the most total revenue\",\n    subtitle = \"Four weeks of simulated café orders, Sept 21 – Oct 18, 2026\",\n    x        = NULL,\n    y        = \"Total revenue (USD)\",\n    caption  = \"Synthetic data for the ETV Workshop\"\n  ) +\n  theme_minimal()\nNotice the title is the answer, not a description like “Revenue by Category.” Make every plot title state what the viewer should take away.\nCheckpoint: the Plots pane shows three bars; Coffee is clearly tallest (around 1,600), Specialty in the middle (around 900), Tea shortest (around 560).\n\n\n\n\n\n\nNoteWhy + and not |&gt;?\n\n\n\nggplot2 was written before the pipe existed, and it stacks layers onto a plot rather than passing data through steps. So inside a ggplot you use +. Everywhere else today, use |&gt;. If you mix them up, ggplot gives a helpful error telling you so.\n\n\n\nSecond chart, same two lines changed\nThe question also asked why. Swap the y-axis to avg_revenue and the story flips:\nggplot(cafe_summary, aes(x = category, y = avg_revenue)) +\n  geom_col(fill = \"#b5562a\") +\n  labs(\n    title = \"…but Specialty drinks make the most per order\",\n    x     = NULL,\n    y     = \"Average revenue per order (USD)\"\n  ) +\n  theme_minimal()"
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#change-something-and-try-again",
+    "href": "qmd/02_csv_extract_transform_visualize.html#change-something-and-try-again",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "Change something and try again",
+    "text": "Change something and try again\nPick one of these and run it. Predict the result before you run it. Then check the Data Explorer or the printed table to see if you were right.\nA. Swap the grouping variable. Change group_by(category) to group_by(size). Which size brings in the most money? (Does the answer surprise you given that Large costs the most?)\nB. Add a filter. Insert filter(hour &lt; 12) |&gt; right after cafe_clean |&gt; so you only look at morning orders. Does Coffee’s lead grow or shrink in the morning?\nC. Two grouping variables. Change to group_by(category, loyalty_member). Do loyalty members spend more per order in every category, or just some?\n# Template: copy, then change ONE thing\ncafe_clean |&gt;\n  # filter(hour &lt; 12) |&gt;              # &lt;- option B: uncomment\n  group_by(category) |&gt;               # &lt;- option A or C: change this\n  summarise(\n    orders        = n(),\n    total_revenue = sum(revenue),\n    avg_revenue   = mean(revenue)\n  )\nEvery one of these is the same ETV recipe with one ingredient changed. That’s the skill: not memorizing functions, but knowing which step of the recipe your question lives in."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#interpretation-answering-the-question-in-plain-language",
+    "href": "qmd/02_csv_extract_transform_visualize.html#interpretation-answering-the-question-in-plain-language",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "Interpretation — answering the question in plain language",
+    "text": "Interpretation — answering the question in plain language\n\nCoffee brings in the most total revenue, about $1,612 over four weeks, roughly $700 more than Specialty and nearly three times Tea. But that lead comes from volume, not price: Coffee accounts for 276 of the 506 orders (55%). Per order, Specialty drinks earn the most, about $7.29 versus $5.84 for Coffee and $5.40 for Tea. So the honest answer to the café is: coffee pays the bills because people buy a lot of it, while specialty drinks are the most valuable individual sale. If the café wants to raise revenue without raising prices, nudging coffee customers toward a specialty drink is the lever these data point to.\n\nNotice how the interpretation mentions actual numbers, says what the data can and can’t tell us, and ends with what someone could do about it. That’s the finish line for every ETV cycle."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#optional-extensions-skip-if-short-on-time",
+    "href": "qmd/02_csv_extract_transform_visualize.html#optional-extensions-skip-if-short-on-time",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "Optional extensions (skip if short on time)",
+    "text": "Optional extensions (skip if short on time)\nDaily revenue over time. Group by date instead, then plot with geom_line() and aes(x = date, y = total_revenue). Weekends should be visibly lower.\nTop drinks. group_by(drink) then arrange(desc(total_revenue)) then head(5). arrange() sorts; desc() reverses the order.\nA reusable recipe. Put your whole pipeline (read → mutate → group → summarise → plot) into one script and run it top to bottom with the ▶ button. If it runs clean from an empty session, you’ve written a real, reproducible analysis."
+  },
+  {
+    "objectID": "qmd/02_csv_extract_transform_visualize.html#troubleshooting",
+    "href": "qmd/02_csv_extract_transform_visualize.html#troubleshooting",
+    "title": "02 · Café Orders: Extract → Transform → Visualize",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\nError: object 'cafe' not found — you skipped the read_csv() line or it failed. Scroll up in the Console for the real error.\ncould not find function \"read_csv\" — you didn’t run library(readr). Loading packages is per session; if you restarted R, run the three library() lines again.\nprice_num is all NA — most likely you wrote parse_number(price_num) instead of parse_number(price), or the CSV was edited in Excel and saved with a different encoding. Re-download the CSV.\nThe plot pane is blank / the plot is tiny — drag the pane divider to make the Plots pane bigger, or click the “open in new window” icon.\nError in ggplot(...) : could not find function \"ggplot\" — run library(ggplot2).\n\n\n\n\n\n\n\nNoteNot tested in this build\n\n\n\n\n\nThe R code in this file follows current readr/dplyr/ggplot2 documentation and the expected outputs were computed from the CSV with a separate tool, but the R code itself was not executed when these materials were generated. If an output differs slightly in formatting (column widths, rounding), that’s expected. If a function errors, check the package version with packageVersion(\"dplyr\") (should be 1.1 or newer)."
+  }
+]
